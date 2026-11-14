@@ -5342,6 +5342,8 @@
     "es-MX": "Horarios de oración", it: "Orari di preghiera", de: "Gebetszeiten", fr: "Heures de prière", nl: "Gebedstijden",
     pl: "Czasy modlitw", cs: "Časy modliteb", pt: "Horários de oração", "sr-Latn-RS": "Vaktija" };
   for (var sp in SEC_PRAYER) if (S[sp]) S[sp].sec_prayer = SEC_PRAYER[sp];
+  var ACT_AYAT = { en: "Ayat on calm backgrounds", ru: "Аяты на спокойном фоне", ar: "آيات على خلفيات هادئة", tr: "Sakin arka planda ayetler" };
+  for (var aa in S) S[aa].smart_idle_act_ayat = ACT_AYAT[aa] || ACT_AYAT.en;
   // the Halal TV scenes' names
   var SCENES_HALAL = {
     en: ["Desert night", "Mosque courtyard", "Misty valley", "Andalusian garden", "Winter village"],

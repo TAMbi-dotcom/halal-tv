@@ -1793,7 +1793,7 @@ html:not(.kids-on) .kids { display: none; }
 .lighter .kids, .old-engine .kids { background: #1d2140; }
 .lighter .ktile, .lighter .ktrack, .lighter .kapp, .lighter .kkey { transition: none; }
 
-/* ================= Right-to-Left (RTL) Support for Hebrew ================= */
+/* ================= Right-to-Left (RTL) support (Arabic in Halal TV; written for Hebrew upstream) ================= */
 [dir="rtl"] {
   text-align: right;
 }
@@ -1971,3 +1971,27 @@ html.kids-on .kids {
   background: rgba(236, 201, 128, 0.2); box-shadow: inset 0 0 0 1px rgba(236, 201, 128, 0.45); }
 .kprayer:empty { display: none; }
 .toast { z-index: 60; }
+
+/* ================= Halal TV: the ayat screensaver (ayat.js) ================= */
+@font-face { font-family: "Amiri Quran"; src: url("fonts/amiri-quran-arabic-400-normal.woff2") format("woff2"); font-display: swap; }
+.idle-ambient-overlay.ayat-mode .idle-ambient-inner { display: none; }
+.idle-ambient-overlay.ayat-mode { background: #05070d; }
+.ayat-layer { position: absolute; inset: 0; opacity: 0; transition: opacity 1.2s ease; }
+.ayat-layer.on { opacity: 1; }
+.ayat-bg { position: absolute; inset: 0; background: #0a0d16 center / cover no-repeat; opacity: 0; transition: opacity 2.5s ease; }
+.ayat-bg.on { opacity: 1; }
+.ayat-shade { position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.48) 0%, rgba(0, 0, 0, 0.2) 70%), linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.45)); }
+.ayat-card {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(76rem, 82vw); text-align: center;
+  color: #fff; text-shadow: 0 0.125rem 1.25rem rgba(0, 0, 0, 0.55); opacity: 0; transition: opacity 1.4s ease;
+}
+.ayat-card.in { opacity: 1; }
+.ayat-ar, [dir="rtl"] .ayat-ar { text-align: center; }
+.ayat-ar { margin: 0; font-family: "Amiri Quran", "Noto Naskh Arabic", serif; font-size: 3.5rem; line-height: 2; direction: rtl; }
+.ayat-tr { margin: 1.5rem auto 0; max-width: 64rem; font-size: 1.875rem; line-height: 1.45; font-weight: 450; color: rgba(255, 255, 255, 0.92); }
+.ayat-ref { margin: 1.25rem 0 0; font-family: "Amiri Quran", serif; font-size: 1.5rem; color: rgba(236, 201, 128, 0.95); }
+.ayat-foot { position: absolute; left: var(--safe-x); right: var(--safe-x); bottom: var(--safe-y); display: flex; justify-content: space-between; align-items: baseline; color: rgba(255, 255, 255, 0.82); text-shadow: 0 0.125rem 1rem rgba(0, 0, 0, 0.5); }
+.ayat-clock { font-size: 3rem; font-weight: 300; font-variant-numeric: tabular-nums; }
+.ayat-prayer { font-size: 1.5rem; }
+.ayat-by { position: absolute; top: var(--safe-y); right: var(--safe-x); margin: 0; font-size: 1rem; color: rgba(255, 255, 255, 0.5); }
+[dir="rtl"] .ayat-by { right: auto; left: var(--safe-x); }

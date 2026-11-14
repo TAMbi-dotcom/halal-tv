@@ -83,17 +83,18 @@
   // the photo's frosted copy, or "liquid", clear glass digits): Home settings, Look, else
   // home.glass_amount and home.clock_style (#25, #29).
   var GLASS_AMT = 3, CLOCK_LIQUID = false;
-  var SMART_IDLE = { enabled: false, home_idle_minutes: 15, home_action: "ambient_clock", paused_idle_minutes: 30, quiet_hours: { enabled: false, start: "23:00", end: "06:00", idle_minutes: 15 } };
+  var SMART_IDLE = { enabled: true, home_idle_minutes: 10, home_action: "ayat", paused_idle_minutes: 30, quiet_hours: { enabled: false, start: "23:00", end: "06:00", idle_minutes: 15 } };
   var SMART_IDLE_HOME_STEPS = [0, 5, 10, 15, 30, 60];
   var SMART_IDLE_PAUSED_STEPS = [0, 10, 15, 20, 30, 45, 60];
-  var SMART_IDLE_ACTIONS = ["ambient_clock", "screen_off", "tv_off"];
+  // Halal TV: "ayat", the ayat screensaver (ayat.js), is the default and is on unless switched off
+  var SMART_IDLE_ACTIONS = ["ayat", "ambient_clock", "screen_off", "tv_off"];
   function normSmartIdle(raw) {
     var d = raw && typeof raw === "object" ? raw : {};
     var qh = d.quiet_hours && typeof d.quiet_hours === "object" ? d.quiet_hours : {};
     return {
-      enabled: !!d.enabled,
-      home_idle_minutes: SMART_IDLE_HOME_STEPS.indexOf(d.home_idle_minutes) >= 0 ? d.home_idle_minutes : 15,
-      home_action: SMART_IDLE_ACTIONS.indexOf(d.home_action) >= 0 ? d.home_action : "ambient_clock",
+      enabled: d.enabled == null ? true : !!d.enabled,
+      home_idle_minutes: SMART_IDLE_HOME_STEPS.indexOf(d.home_idle_minutes) >= 0 ? d.home_idle_minutes : 10,
+      home_action: SMART_IDLE_ACTIONS.indexOf(d.home_action) >= 0 ? d.home_action : "ayat",
       paused_idle_minutes: SMART_IDLE_PAUSED_STEPS.indexOf(d.paused_idle_minutes) >= 0 ? d.paused_idle_minutes : 30,
       quiet_hours: {
         enabled: !!qh.enabled,
@@ -1764,10 +1765,14 @@
           hint.style.animation = "";
         }
         ov.classList.toggle("quiet-hours", isQuietHours(SMART_IDLE.quiet_hours));
+        var ayat = SMART_IDLE.home_action === "ayat" && window.HalalAyat && window.HalalAyat.count() > 0;
+        ov.classList.toggle("ayat-mode", !!ayat);
+        if (ayat) window.HalalAyat.start(ov);
         ov.classList.add("active");
       }
     } else if (ov) {
       ov.classList.remove("active");
+      if (window.HalalAyat) window.HalalAyat.stop();
     }
     sceneVideos(!idleAmbientActive);   // no clip decoding behind the ambient clock
   }
@@ -3323,6 +3328,7 @@
     var line = "";
     try { line = P.lineText(ST, WXCFG, now, CLOCK24); } catch (e) {}
     var ip = $("idle-prayer"); if (ip) ip.textContent = line;
+    if (window.HalalAyat && idleAmbientActive) window.HalalAyat.foot($("idle-clock") ? $("idle-clock").textContent : "", line);
     if (window.KidsMode && window.KidsMode.prayerLine) window.KidsMode.prayerLine(line);
     var due = null;
     try { due = P.due(ST, WXCFG, now); } catch (e) {}
