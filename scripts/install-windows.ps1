@@ -22,6 +22,16 @@ param(
   [string]$Repo = "TAMbi-dotcom/halal-tv"
 )
 $ErrorActionPreference = "Stop"
+
+# Run adb and return everything it printed as text. Windows PowerShell 5.1 turns anything a program
+# writes to stderr into a terminating error under "Stop", so adb's own messages (such as a signature
+# mismatch) are read here with errors relaxed for that one call.
+function AdbText {
+  $old = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  try { return ((& $Adb @args 2>&1) | ForEach-Object { "$_" }) -join "`n" }
+  finally { $ErrorActionPreference = $old }
+}
 $Pkg = "org.halaltv.tv"
 $OldPkg = "dev.couchtv.ontv"   # test builds before 14 November 2026
 $Cls = "dev.couchtv.ontv"      # the code's own namespace, used in component names
@@ -78,13 +88,13 @@ if (-not $Apk) {
   Invoke-WebRequest $asset.browser_download_url -OutFile $Apk
 }
 if (-not (Test-Path $Apk)) { throw "No app file at $Apk" }
-$out = (& $Adb -s "${Tv}:5555" install -r "$Apk" 2>&1) -join "`n"
+$out = AdbText -s "${Tv}:5555" install -r "$Apk"
 if ($out -match "INSTALL_FAILED_UPDATE_INCOMPATIBLE|signatures do not match") {
   Say "The Halal TV on the TV was signed with another key, so it cannot be updated in place."
   $yes = Read-Host "Remove it and install this one? Its settings on the TV go with it (y/N)"
   if ($yes -ne "y") { throw "Stopped. Nothing changed." }
-  & $Adb -s "${Tv}:5555" uninstall $Pkg | Out-Host
-  $out = (& $Adb -s "${Tv}:5555" install "$Apk" 2>&1) -join "`n"
+  AdbText -s "${Tv}:5555" uninstall $Pkg | Out-Host
+  $out = AdbText -s "${Tv}:5555" install "$Apk"
 }
 if ($out -notmatch "Success") { throw "Install failed: $out" }
 Say "Installed."
@@ -94,16 +104,16 @@ $old = (& $Adb -s "${Tv}:5555" shell pm list packages $OldPkg) -join ""
 if ($old -match "package:$([regex]::Escape($OldPkg))\b") {
   Say "An older Halal TV test build ($OldPkg) is also on the TV."
   $yes = Read-Host "Remove the old test build? Its settings go with it (y/N)"
-  if ($yes -eq "y") { & $Adb -s "${Tv}:5555" uninstall $OldPkg | Out-Host }
+  if ($yes -eq "y") { AdbText -s "${Tv}:5555" uninstall $OldPkg | Out-Host }
   else { Say "Kept. If Home opens the old one, remove it in Settings, Apps." }
 }
 
 Step "4. Home screen"
 & $Adb -s "${Tv}:5555" shell pm enable "$Pkg/$Cls.HomeAlias" | Out-Null
 & $Adb -s "${Tv}:5555" shell cmd package set-home-activity "$Pkg/$Cls.HomeAlias" | Out-Host
-& $Adb -s "${Tv}:5555" shell pm grant $Pkg android.permission.READ_TV_LISTINGS 2>$null | Out-Null
+AdbText -s "${Tv}:5555" shell pm grant $Pkg android.permission.READ_TV_LISTINGS | Out-Null
 # The prayer-time card over other apps (Netflix, YouTube...) needs "display over other apps".
-& $Adb -s "${Tv}:5555" shell appops set $Pkg SYSTEM_ALERT_WINDOW allow 2>$null | Out-Null
+AdbText -s "${Tv}:5555" shell appops set $Pkg SYSTEM_ALERT_WINDOW allow | Out-Null
 & $Adb -s "${Tv}:5555" shell am start -n "$Pkg/$Cls.SetupActivity" | Out-Null
 Say "Done. On the TV: press Connect ADB in Halal TV (and Allow), then press Home."
 Say "Undo: Settings, Apps, Halal TV, Uninstall."
