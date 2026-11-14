@@ -45,10 +45,11 @@ LANG_NAMES = {
     "fr": "French",
     "sr-Latn-RS": "Serbian",
     "nl": "Dutch",
-    "he": "Hebrew",
     "cs": "Czech",
     "pl": "Polish",
     "pt": "Brazilian Portuguese",
+    "ru": "Russian",
+    "ar": "Arabic",
 }
 
 
