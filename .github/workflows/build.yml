@@ -64,6 +64,6 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: couch-tv-test-apks
+          name: halal-tv-test-apks
           path: dist/*.apk
           if-no-files-found: error
