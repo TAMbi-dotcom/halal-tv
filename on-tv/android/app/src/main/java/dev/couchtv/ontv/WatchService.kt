@@ -11,7 +11,7 @@ import android.view.accessibility.AccessibilityEvent
  * FireHome switches this service on with the secure-settings grant, and Android keeps it bound
  * across reboots, so the Home key keeps landing on this app's home with no computer involved.
  *
- * On Xiaomi with "Couch TV in PatchWall's place" on, it also filters keys, for one key only (see
+ * On Xiaomi with "Halal TV in PatchWall's place" on, it also filters keys, for one key only (see
  * onKeyEvent). Key filtering is requested at run time only then, so on every other TV, and on a
  * Xiaomi with the switch off, no key passes through this app.
  */

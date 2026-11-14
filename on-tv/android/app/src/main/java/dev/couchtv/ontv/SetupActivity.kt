@@ -17,7 +17,7 @@ import android.widget.ScrollView
 import android.widget.TextView
 
 /**
- * The setup screen on the TV (the "Couch TV" tile). Shows the address to open on a phone, the
+ * The setup screen on the TV (the "Halal TV" tile). Shows the address to open on a phone, the
  * pairing code, and the state of ADB. Everything with typing (wireless debugging code, API key,
  * names) is done on the phone at /setup, because typing with a TV remote is miserable.
  */
@@ -43,7 +43,7 @@ class SetupActivity : Activity() {
             text = t; textSize = size; setTextColor(colour); if (bold) typeface = Typeface.create("sans-serif-condensed", Typeface.BOLD)
             setPadding(0, px(4), 0, px(4))
         }
-        col.addView(text("Couch TV", 34f, CREAM, true))
+        col.addView(text("Halal TV", 34f, CREAM, true))
         col.addView(text("The phone remote runs on this TV. No computer needed.", 16f, CREAM_2))
         address = text("", 22f, AMBER, true); col.addView(address)
         code = text("", 44f, CREAM, true); col.addView(code)
@@ -127,10 +127,10 @@ class SetupActivity : Activity() {
         } + "   Phones paired: ${Auth.phoneCount()}"
         homeBtn.text = if (App.homeEnabled(this)) "Stop being the home screen" else "Use as home screen"
         homeNote.text = when {
-            !App.homeEnabled(this) -> "Use as home screen asks Android to make Couch TV your home. No computer needed on a plain Android TV."
-            HomeRole.held(this) -> "Couch TV is your home screen."
-            HomeRole.googleTv(this) -> "On Google TV, Google's home keeps the Home button. Open Couch TV from here with Open the home (it shows when Home does not open Couch TV), or use the TV home install (apply.sh) for the Home button."
-            else -> "If Android showed a list, choose Couch TV and press Always. If Home still opens the TV's own home, press Home button watch and switch on Couch TV home watch."
+            !App.homeEnabled(this) -> "Use as home screen asks Android to make Halal TV your home. No computer needed on a plain Android TV."
+            HomeRole.held(this) -> "Halal TV is your home screen."
+            HomeRole.googleTv(this) -> "On Google TV, Google's home keeps the Home button. Open Halal TV from here with Open the home (it shows when Home does not open Halal TV), or use the TV home install (apply.sh) for the Home button."
+            else -> "If Android showed a list, choose Halal TV and press Always. If Home still opens the TV's own home, press Home button watch and switch on Halal TV home watch."
         }
     }
 

@@ -3211,7 +3211,7 @@
     ["apps", "apps"], ["people", "person"], ["quick", "bolt"], ["about", "info"]];
   var SET = { col: "secs", sec: 0, ri: 0, keyFocus: null, sub: null, lift: null, confirm: null, dirty: false, typing: null,
     msg: "", geo: { q: "", list: null, busy: false, err: false } };
-  var REPO_URL = "github.com/Seagey/couch-tv";
+  var REPO_URL = "github.com/TAMbi-dotcom/halal-tv";
   var WX_DEFAULT = { lat: 36.8969, lon: 30.7133, place: "Antalya", timezone: "Europe/Istanbul" };
   var pushTimer = null;
 
@@ -3783,6 +3783,13 @@
         act: function () { cycleApp(it.package); },
         move: where === "app_hidden" ? null : function (d) { moveAppRow(it.package, d); } };
     };
+    var streams = streamingHere();
+    if (streams.length) {
+      var allHidden = streams.every(function (a) { return HIDDEN_TV.indexOf(a.package) >= 0; });
+      rows.push({ kind: "action", key: "apps-streaming", label: t(allHidden ? "stream_show" : "stream_hide"),
+        sub: streams.map(function (a) { return a.name; }).join(", "),
+        act: function () { hideStreaming(!allHidden); renderSettings(); } });
+    }
     rows.push(head(t("apps_home", { n: arr.line, max: DOCK_APPS })));
     arr.items.slice(0, arr.line).forEach(function (it) { rows.push(row(it, "app_on_home")); });
     rows.push(head(t("apps_more")));
@@ -4022,6 +4029,9 @@
     renderAsk();
   }
   function askRows() {
+    if (askKind === "stream") {
+      return [[ICONS.check, t("stream_ask_yes"), t("stream_ask_yes_sub")], [ICONS.sliders, t("stream_ask_no"), t("stream_ask_no_sub")]];
+    }
     if (askKind === "dev") {
       return [[ICONS.devmode, t("dev_ask_yes"), t("dev_ask_yes_sub")], [ICONS.sliders, t("dev_ask_no"), t("dev_ask_no_sub")]];
     }
@@ -4031,6 +4041,7 @@
     return [[ICONS.download, t("upd_ask_yes"), t("upd_ask_yes_sub")], [ICONS.sliders, t("upd_ask_no"), t("upd_ask_no_sub")]];
   }
   function askHead() {
+    if (askKind === "stream") return ["stream_ask", "stream_ask_sub"];
     if (askKind === "dev") return ["dev_ask", "dev_ask_sub"];
     if (askKind === "home") return ["home_ask", "home_ask_sub"];
     return ["upd_ask", "upd_ask_sub"];
@@ -4052,6 +4063,14 @@
     $("gear-pop").classList.remove("on", "ask");
     document.documentElement.classList.remove("gearing");
     zone = "grid";
+    if (askKind === "stream") {
+      keep("tvhome.stream.asked", 1);
+      startFocus();
+      if (yes) hideStreaming(true);
+      paintFocus();
+      status(t(yes ? "stream_hidden" : "stream_kept"));
+      return;
+    }
     if (askKind === "home") {
       keep("tvhome.home.asked", 1);
       startFocus();
@@ -4091,6 +4110,30 @@
     clearFocus();
     renderAsk();
   }
+  // ---- Halal TV: offered once, the paid streaming services can go off the home ----
+  // Hidden, not removed: Home settings, Apps shows them again in one press. YouTube is not on the
+  // list. Asked once, after the other first-run questions, only when one of them is installed.
+  var STREAMING = ["com.netflix.ninja", "com.amazon.amazonvideo.livingroom", "com.disney.disneyplus",
+    "com.apple.atve.androidtv.appletv", "com.wbd.stream", "com.hbo.hbonow", "com.cbs.ca", "com.cbs.app",
+    "com.hulu.livingroomplus", "com.peacocktv.peacockandroid", "com.mubi", "au.com.stan.and",
+    "au.com.streamotion.ares.tv", "com.paramount.android.pplus", "com.showtime.standalone",
+    "ru.kinopoisk.tv", "ru.ivi.client", "ru.more.play", "ru.okko.tv", "ru.rt.video.app.tv", "ru.start.androidmobile"];
+  function streamingHere() { return data.apps.filter(function (a) { return STREAMING.indexOf(a.package) >= 0; }); }
+  function hideStreaming(on) {
+    var here = streamingHere().map(function (a) { return a.package; });
+    if (on) setHidden(HIDDEN_TV.concat(here.filter(function (p) { return HIDDEN_TV.indexOf(p) < 0; })));
+    else setHidden(HIDDEN_TV.filter(function (p) { return STREAMING.indexOf(p) < 0; }));
+    try { renderGrid(); } catch (e) {}
+  }
+  function streamAsk() {
+    if (kept("tvhome.stream.asked") || kidsOn() || HOME.ask_streaming === false) return;
+    if (zone !== "grid" && zone !== "shelf" && zone !== "people" && zone !== "quick") return;
+    if (!streamingHere().length) return;
+    askKind = "stream"; zone = "updask"; ai = 0;
+    clearFocus();
+    renderAsk();
+  }
+
   function homeAnswered(held) {
     if (zone === "settings") renderSettings();
     status(t(held ? "home_now" : "home_not_yet"));
@@ -4888,7 +4931,7 @@
       }
       return api("POST", "/api/who", { who: who });
     }).catch(function () {});
-    hello.then(refresh).then(function () { mark("home-painted-live"); updTell(); updAsk(); homeAsk(); });
+    hello.then(refresh).then(function () { mark("home-painted-live"); updTell(); updAsk(); homeAsk(); streamAsk(); });
     resetIdlePhoto();
   }
 

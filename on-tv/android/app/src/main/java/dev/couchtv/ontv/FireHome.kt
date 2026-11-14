@@ -131,7 +131,7 @@ object FireHome {
         wakeAt = android.os.SystemClock.elapsedRealtime()
         later.removeCallbacksAndMessages(null)
         later.postDelayed({
-            if (lastPkg == TV_APP) Log.i(TAG, "screen on: the TV is going back to an input, Couch TV stays back")
+            if (lastPkg == TV_APP) Log.i(TAG, "screen on: the TV is going back to an input, Halal TV stays back")
             else App.openHome()
         }, 2_000)
     }

@@ -46,7 +46,7 @@
 
     <application
         android:name=".App"
-        android:label="Couch TV"
+        android:label="Halal TV"
         android:icon="@drawable/icon"
         android:banner="@drawable/banner"
         android:theme="@style/Couch"
@@ -104,7 +104,7 @@
         <service
             android:name=".WatchService"
             android:exported="false"
-            android:label="Couch TV home watch"
+            android:label="Halal TV home watch"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />

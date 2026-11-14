@@ -6492,6 +6492,26 @@
   for (var sp in SEC_PRAYER) if (S[sp]) S[sp].sec_prayer = SEC_PRAYER[sp];
   var ACT_AYAT = { en: "Ayat on calm backgrounds", ru: "Аяты на спокойном фоне", ar: "آيات على خلفيات هادئة", tr: "Sakin arka planda ayetler" };
   for (var aa in S) S[aa].smart_idle_act_ayat = ACT_AYAT[aa] || ACT_AYAT.en;
+  // Halal TV: hiding the paid streaming services (asked once, and Home settings, Apps)
+  var STREAM_TXT = {
+    en: { stream_ask: "Hide the streaming services?", stream_ask_sub: "Netflix, Prime Video and the like go off the home. YouTube stays. Nothing is uninstalled: Home settings, Apps brings them back.",
+      stream_ask_yes: "Yes, hide them", stream_ask_yes_sub: "They stay installed, only hidden", stream_ask_no: "No, keep them", stream_ask_no_sub: "Home settings, Apps, any time",
+      stream_hidden: "Hidden. Home settings, Apps shows them again.", stream_kept: "Kept. You can hide them in Home settings, Apps.",
+      stream_hide: "Hide the streaming services", stream_show: "Show the streaming services again" },
+    ru: { stream_ask: "Скрыть стриминговые сервисы?", stream_ask_sub: "Netflix, Prime Video и подобные уйдут с главного экрана. YouTube останется. Ничего не удаляется: вернуть можно в «Настройки главного экрана», «Приложения».",
+      stream_ask_yes: "Да, скрыть", stream_ask_yes_sub: "Останутся установленными, только скрыты", stream_ask_no: "Нет, оставить", stream_ask_no_sub: "«Настройки главного экрана», «Приложения» — в любое время",
+      stream_hidden: "Скрыто. Вернуть можно в «Настройки главного экрана», «Приложения».", stream_kept: "Оставлено. Скрыть можно в «Настройки главного экрана», «Приложения».",
+      stream_hide: "Скрыть стриминговые сервисы", stream_show: "Показать стриминговые сервисы снова" },
+    ar: { stream_ask: "إخفاء خدمات البث؟", stream_ask_sub: "تختفي Netflix وPrime Video وأمثالها من الشاشة الرئيسية. يبقى YouTube. لا يُحذف شيء: تعيدها إعدادات الشاشة الرئيسية، التطبيقات.",
+      stream_ask_yes: "نعم، أخفها", stream_ask_yes_sub: "تبقى مثبتة، مخفية فقط", stream_ask_no: "لا، أبقها", stream_ask_no_sub: "إعدادات الشاشة الرئيسية، التطبيقات، في أي وقت",
+      stream_hidden: "أُخفيت. تعيدها إعدادات الشاشة الرئيسية، التطبيقات.", stream_kept: "أُبقيت. يمكنك إخفاؤها من إعدادات الشاشة الرئيسية، التطبيقات.",
+      stream_hide: "إخفاء خدمات البث", stream_show: "إظهار خدمات البث مرة أخرى" },
+    tr: { stream_ask: "Yayın servisleri gizlensin mi?", stream_ask_sub: "Netflix, Prime Video ve benzerleri ana ekrandan kalkar. YouTube kalır. Hiçbir şey kaldırılmaz: Ana ekran ayarları, Uygulamalar geri getirir.",
+      stream_ask_yes: "Evet, gizle", stream_ask_yes_sub: "Yüklü kalırlar, sadece gizlenir", stream_ask_no: "Hayır, kalsın", stream_ask_no_sub: "Ana ekran ayarları, Uygulamalar, her zaman",
+      stream_hidden: "Gizlendi. Ana ekran ayarları, Uygulamalar geri getirir.", stream_kept: "Kaldı. Ana ekran ayarları, Uygulamalar'dan gizleyebilirsiniz.",
+      stream_hide: "Yayın servislerini gizle", stream_show: "Yayın servislerini yeniden göster" }
+  };
+  for (var sl in S) { var st = STREAM_TXT[sl] || STREAM_TXT.en; for (var sk in st) S[sl][sk] = st[sk]; }
   // the Halal TV scenes' names
   var SCENES_HALAL = {
     en: ["Desert night", "Mosque courtyard", "Misty valley", "Andalusian garden", "Winter village"],
