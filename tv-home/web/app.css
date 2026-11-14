@@ -1995,3 +1995,8 @@ html.kids-on .kids {
 .ayat-prayer { font-size: 1.5rem; }
 .ayat-by { position: absolute; top: var(--safe-y); right: var(--safe-x); margin: 0; font-size: 1rem; color: rgba(255, 255, 255, 0.5); }
 [dir="rtl"] .ayat-by { right: auto; left: var(--safe-x); }
+
+/* Halal TV, Arabic: names written left to right (Disney+, The Bear) keep their own direction, and
+   the Keep watching row (which reaches past the screen's edge on purpose) does not shift the page. */
+html[dir="rtl"], html[dir="rtl"] body { overflow-x: hidden; }
+[dir="rtl"] .tile, [dir="rtl"] .tile *, [dir="rtl"] .shelf-track *, [dir="rtl"] .people *, [dir="rtl"] .ktitle, [dir="rtl"] .kapp span { unicode-bidi: plaintext; }
