@@ -49,7 +49,8 @@
       adj_sub: "Left and right change it by a minute.", min: "{n} min", hijri_adj: "Hijri date correction",
       days: "{n} days", notify: "Note at prayer time", before: "Reminder before", before_none: "None",
       place: "Place", place_note: "Prayer times use the place from Location.", events: "Events of the year",
-      on: "On", off: "Off", russia: "Spiritual Administration of Muslims of Russia"
+      on: "On", off: "Off", russia: "Spiritual Administration of Muslims of Russia",
+      azkar: "Adhkar reminder", azkar_sub: "A line on the card after Fajr and after Asr.", azkar_m: "Time for the morning adhkar", azkar_e: "Time for the evening adhkar"
     },
     ru: {
       sec: "Время намазов", in_h_m: "{name} через {h} ч {m} мин", in_m: "{name} через {m} мин", now: "Время намаза {name}",
@@ -63,7 +64,8 @@
       adj_sub: "Влево и вправо меняют на минуту.", min: "{n} мин", hijri_adj: "Поправка даты по хиджре",
       days: "{n} дн.", notify: "Уведомление о намазе", before: "Напоминание заранее", before_none: "Нет",
       place: "Место", place_note: "Время намазов считается для места из раздела «Место».", events: "События года",
-      on: "Вкл.", off: "Выкл.", russia: "ДУМ РФ"
+      on: "Вкл.", off: "Выкл.", russia: "ДУМ РФ",
+      azkar: "Напоминание об азкарах", azkar_sub: "Строка на карточке после фаджра и после асра.", azkar_m: "Время утренних азкаров", azkar_e: "Время вечерних азкаров"
     },
     ar: {
       sec: "مواقيت الصلاة", in_h_m: "{name} بعد {h} س {m} د", in_m: "{name} بعد {m} د", now: "حان وقت {name}",
@@ -77,7 +79,8 @@
       adj_sub: "اليمين واليسار يغيّران دقيقة.", min: "{n} د", hijri_adj: "تصحيح التاريخ الهجري",
       days: "{n} يوم", notify: "تنبيه عند وقت الصلاة", before: "تذكير قبل الصلاة", before_none: "بلا",
       place: "المكان", place_note: "تُحسب المواقيت للمكان المختار في قسم الموقع.", events: "مناسبات العام",
-      on: "تشغيل", off: "إيقاف", russia: "الإدارة الدينية لمسلمي روسيا"
+      on: "تشغيل", off: "إيقاف", russia: "الإدارة الدينية لمسلمي روسيا",
+      azkar: "تذكير بالأذكار", azkar_sub: "سطر على البطاقة بعد الفجر وبعد العصر.", azkar_m: "وقت أذكار الصباح", azkar_e: "وقت أذكار المساء"
     },
     tr: {
       sec: "Namaz vakitleri", in_h_m: "{name} vaktine {h} sa {m} dk", in_m: "{name} vaktine {m} dk", now: "{name} vakti",
@@ -91,7 +94,8 @@
       adj_sub: "Sağ ve sol bir dakika değiştirir.", min: "{n} dk", hijri_adj: "Hicri tarih düzeltmesi",
       days: "{n} gün", notify: "Vakit bildirimi", before: "Önceden hatırlatma", before_none: "Yok",
       place: "Konum", place_note: "Vakitler Konum bölümündeki yere göre hesaplanır.", events: "Yılın dini günleri",
-      on: "Açık", off: "Kapalı", russia: "Rusya Müslümanları Dini İdaresi"
+      on: "Açık", off: "Kapalı", russia: "Rusya Müslümanları Dini İdaresi",
+      azkar: "Zikir hatırlatması", azkar_sub: "Sabah namazından ve ikindiden sonra kartta bir satır.", azkar_m: "Sabah zikirlerinin vakti", azkar_e: "Akşam zikirlerinin vakti"
     }
   };
 
@@ -116,7 +120,7 @@
   ];
   var HIGH = ["auto", "middle", "seventh", "angle"];
   var BEFORE = [0, 5, 10, 15, 20, 30];
-  var DEFAULTS = { method: "Turkey", madhab: "shafi", high: "auto", adj: {}, hijri_adj: 0, notify: true, before: 10, show: true };
+  var DEFAULTS = { method: "Turkey", madhab: "shafi", high: "auto", adj: {}, hijri_adj: 0, notify: true, before: 10, show: true, azkar: true };
 
   function lang() { var l = window.I18N ? window.I18N.lang() : "en"; return l === "es-MX" ? "es" : l; }
   function tx(key, vars) {
@@ -246,6 +250,10 @@
       if (now < s.today.fajr) out.push(tx("ram_suhur", { left: left(s.today.fajr - now) }));
       else if (now < s.today.maghrib) out.push(tx("ram_iftar", { left: left(s.today.maghrib - now) }));
     }
+    if (s.c.azkar) {
+      if (now >= s.today.fajr && now < s.today.sunrise) out.push(tx("azkar_m"));
+      else if (now >= s.today.asr && now < s.today.maghrib) out.push(tx("azkar_e"));
+    }
     if (wd === "Fri" && now < s.today.asr) out.push(tx("friday", { time: fmt(s.today.dhuhr, place, true) }));
     var ev = upcomingEvent(s.c, place, now);
     if (ev && ev.d <= 14) out.push(ev.d === 0 ? tx("event_today", { name: evName(ev.e) }) : tx("event_in", { name: evName(ev.e), d: ev.d }));
@@ -309,6 +317,7 @@
       { kind: "toggle", key: "pr-notify", label: tx("notify"), value: onoff(c.notify), act: function () { set("notify", !c.notify); } },
       { kind: "cycle", key: "pr-before", label: tx("before"), value: c.before ? tx("min", { n: c.before }) : tx("before_none"),
         adjust: function (d) { set("before", step(BEFORE, c.before, d)); }, act: function () { set("before", step(BEFORE, c.before, 1)); } },
+      { kind: "toggle", key: "pr-azkar", label: tx("azkar"), sub: tx("azkar_sub"), value: onoff(c.azkar), act: function () { set("azkar", !c.azkar); } },
       { kind: "cycle", key: "pr-hijri", label: tx("hijri_adj"), value: tx("days", { n: (c.hijri_adj > 0 ? "+" : "") + c.hijri_adj }),
         adjust: function (d) { set("hijri_adj", Math.max(-2, Math.min(2, c.hijri_adj + d))); },
         act: function () { set("hijri_adj", c.hijri_adj >= 2 ? -2 : c.hijri_adj + 1); } },
