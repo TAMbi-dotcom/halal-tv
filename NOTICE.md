@@ -8,6 +8,7 @@ under its own licence.
 | couch-tv (the home screen, phone remote, bridge, on-TV app, tools, docs) | everything not listed below | Seagey and contributors, github.com/Seagey/couch-tv | MIT |
 | adhan (prayer time calculation) | `tv-home/web/vendor/adhan.min.js` | Batoul Apps, github.com/batoulapps/adhan-js | MIT (`tv-home/web/vendor/adhan.LICENSE`) |
 | Quran text and translations of the meanings | `tv-home/web/ayat-data.js` | quran-json by Risan Bagja (CC BY 4.0), from The Noble Qur'an Encyclopedia (Uthmani text) and tanzil.net (translations) | CC BY 4.0 for the compilation; see below for the translators |
+| Translations of the meanings in German (Bubenheim and Elyas), Portuguese (Helmi Nasr), Dutch and Serbian (Rowwad Translation Center) | `tv-home/web/ayat-data.js` | QuranEnc, The Noble Qur'an Encyclopedia (quranenc.com) | Quoted ayah by ayah with the translator named, under QuranEnc's terms; footnote numbers left out, Serbian in Latin letters |
 | The Beautiful Names of Allah (list, Russian transliteration and meanings, Quran references) | `tv-home/web/names-data.js` | Encyclopedia of the Quran, Quran Academy (ru.quranacademy.org/encyclopedia/article/Asma-Husna) | Quoted with the source named; the source's own terms apply |
 | Amiri Quran font | `tv-home/web/fonts/amiri-quran-arabic-400-normal.woff2` | The Amiri Project Authors | SIL Open Font Licence 1.1 (`tv-home/web/fonts/amiri-quran.LICENSE`) |
 | Inter and Antonio fonts | `tv-home/web/fonts/` | their authors (via couch-tv) | SIL Open Font Licence 1.1 |

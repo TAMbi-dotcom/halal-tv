@@ -84,8 +84,10 @@ remote, voice and Android's own parts are never switched off.
 - **Quran:** the screensaver quotes single ayat with the translator named, never the book as a whole.
   Arabic text (Uthmani): The Noble Qur'an Encyclopedia (quranenc.com). Translations of the meanings:
   Russian, Elmir Kuliev; English, Saheeh International; Turkish, Diyanet İşleri Başkanlığı; French,
-  Muhammad Hamidullah; Spanish, Muhammad Isa García. Other languages show the English translation for
-  now; suggestions of translations approved by scholars are welcome.
+  Muhammad Hamidullah; Spanish, Muhammad Isa García; from QuranEnc, where translations are reviewed under
+  the Rowwad Translation Center: German, Frank Bubenheim and Nadeem Elyas; Portuguese, Helmi Nasr; Dutch
+  and Serbian, Rowwad Translation Center. Italian, Polish and Czech show the English translation for now;
+  suggestions of translations approved by scholars are welcome.
 - **The Beautiful Names of Allah:** the list, Russian transliteration, meanings and Quran references
   from the Encyclopedia of the Quran, Quran Academy
   ([Имена Аллаха](https://ru.quranacademy.org/encyclopedia/article/Asma-Husna)). The meanings exist
@@ -185,8 +187,11 @@ couch-tv updates: [UPSTREAM.md](UPSTREAM.md). Who made what, and under which lic
 - **Коран:** аяты на заставке — цитаты отдельных аятов с указанием переводчика, не книга целиком.
   Арабский текст (усмановский) — The Noble Qur'an Encyclopedia (quranenc.com). Переводы смыслов:
   русский — Эльмир Кулиев; английский — Saheeh International; турецкий — Diyanet İşleri Başkanlığı;
-  французский — Мухаммад Хамидуллах; испанский — Мухаммад Иса Гарсия. Для остальных языков пока
-  показывается английский перевод: предложения переводов, одобренных учёными, приветствуются.
+  французский — Мухаммад Хамидуллах; испанский — Мухаммад Иса Гарсия; из QuranEnc, где переводы
+  проверяются под руководством Rowwad Translation Center: немецкий — Франк Бубенхайм и Надим Элиас;
+  португальский — Хельми Наср; нидерландский и сербский — Rowwad Translation Center. Для итальянского,
+  польского и чешского пока показывается английский перевод: предложения переводов, одобренных учёными,
+  приветствуются.
 - **Прекрасные имена Аллаха:** список, транслитерация, значения и ссылки на аяты — из «Энциклопедии
   Корана» Академии Корана ([Имена Аллаха](https://ru.quranacademy.org/encyclopedia/article/Asma-Husna)).
   Значения там есть только на русском, поэтому на других языках показываются арабское Имя и аяты.

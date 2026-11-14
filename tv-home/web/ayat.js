@@ -10,7 +10,7 @@
   var EVERY = 30000;
   var layer = null, timer = null, i = 0, b = 0, front = 0, fresh = true, slide = 0, asma = -1;
 
-  function lang() { var l = window.I18N ? window.I18N.lang() : "en"; return l === "es-MX" ? "es" : l; }
+  function lang() { var l = window.I18N ? window.I18N.lang() : "en"; return l.split("-")[0]; }   // es-MX: es, sr-Latn-RS: sr
   function esc(s) {
     return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; });
   }
@@ -52,7 +52,8 @@
     var card = layer.querySelector(".ayat-card");
     card.classList.remove("in");
     void card.offsetWidth;
-    layer.querySelector(".ayat-ar").textContent = a.ar;
+    // U+065E (open dammatan in the Uthmani text) is missing from the Amiri Quran subset: show dammatan.
+    layer.querySelector(".ayat-ar").textContent = a.ar.replace(/\u065E/g, "\u064C");
     var trEl = layer.querySelector(".ayat-tr");
     trEl.textContent = tr;
     trEl.style.display = tr ? "" : "none";
