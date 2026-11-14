@@ -1,7 +1,7 @@
 # Halal TV releases: push a tag such as v0.1.0 and this builds the TV apps, signs them with the fixed
 # key in the DEBUG_KEYSTORE secret (the same one as the test builds, so either can update the other)
 # and attaches halal-tv-ontv.apk and halal-tv-home.apk to a GitHub Release.
-# scripts/install-windows.ps1 downloads halal-tv-ontv.apk from the latest release.
+# scripts/install-windows.ps1 downloads halal-tv-ontv.apk from the newest release, beta ones included.
 name: Release
 
 on:
@@ -50,5 +50,5 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.event.inputs.tag || github.ref_name }}
         run: |
-          gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --title "Halal TV $TAG" --notes "Install: scripts/install-windows.ps1 (Windows) or on-tv/README.md." --prerelease
+          gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --title "Halal TV $TAG" --notes-file .github/release-notes.md --prerelease
           gh release upload "$TAG" out/* --clobber

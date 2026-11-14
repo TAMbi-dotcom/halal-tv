@@ -69,8 +69,13 @@ Say "Connected: $model, Android $ver"
 Step "3. Halal TV"
 if (-not $Apk) {
   $Apk = Join-Path $Dir "halal-tv-ontv.apk"
-  Say "Downloading the latest Halal TV from github.com/$Repo ..."
-  Invoke-WebRequest "https://github.com/$Repo/releases/latest/download/halal-tv-ontv.apk" -OutFile $Apk
+  Say "Downloading the newest Halal TV from github.com/$Repo ..."
+  # The releases list, newest first, includes the beta (pre-)releases that /releases/latest skips.
+  $rel = Invoke-RestMethod "https://api.github.com/repos/$Repo/releases?per_page=10" -Headers @{ "User-Agent" = "halal-tv-installer" }
+  $asset = $rel | ForEach-Object { $_.assets } | Where-Object { $_.name -eq "halal-tv-ontv.apk" } | Select-Object -First 1
+  if (-not $asset) { throw "No Halal TV release found on github.com/$Repo. Download halal-tv-ontv.apk yourself and pass -Apk." }
+  Say "Version: $(($rel | Where-Object { $_.assets.name -contains 'halal-tv-ontv.apk' } | Select-Object -First 1).tag_name)"
+  Invoke-WebRequest $asset.browser_download_url -OutFile $Apk
 }
 if (-not (Test-Path $Apk)) { throw "No app file at $Apk" }
 $out = (& $Adb -s "${Tv}:5555" install -r "$Apk" 2>&1) -join "`n"
