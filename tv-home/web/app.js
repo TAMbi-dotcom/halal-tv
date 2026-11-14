@@ -669,12 +669,19 @@
     // Your own scenes are not listed here: tools/make-scene.py makes them and home.my_scenes in
     // config.json names them (myScenes() below, docs/MAKE-A-SCENE.md).
     // Each scene's clock and date positions are in app.css (.s-<id>, .scene-<id> .date).
-    { id: "night", photo: "scene-night", fg: true, glass: true },
-    { id: "golden", photo: "scene-golden", fg: true, glass: true },
-    { id: "water", photo: "scene-water", fg: false, glass: true, water: 0.55 },   // the underside of the surface
-    { id: "fog", photo: "scene-fog", fg: true, glass: true },
-    { id: "dawn", photo: "scene-dawn", fg: true, glass: true }
+    // Halal TV: five scenes made in ComfyUI (backgrounds/halal/, made with tools/make-scene.py), drawn
+    // the way your own scenes are (app.css, .s-mine). couch-tv's own five scenes are still in
+    // backgrounds/ (scene-night and the rest) but no longer take turns.
+    halalScene("desert", true, "centre", 0.28),
+    halalScene("courtyard", true, "centre", 0.24),
+    halalScene("valley", false, "left", 0.13),   // the hills rise too high for a cut-out over the clock
+    halalScene("garden", true, "left", 0.15),
+    halalScene("snow", false, "centre", 0.26)
   ];
+  function halalScene(id, cutout, x, y) {
+    return { id: id, photo: "halal/scene-" + id, fg: cutout, glass: true, mine: true, halal: true, n: 0, name: "",
+      x: x, y: y, size: 0.37, inter: false, weight: 600, below: false, dark: false, video: false };
+  }
   var BUILT_IN = SCENE_LIB.slice();   // readConfig() adds your own scenes to SCENE_LIB
   var SCENES = SCENE_LIB.slice(), SCENE_MS = 20000, SUN_SYNC = false;
   var scene = 0, sceneEls = [], glassShown = "", lastKeyAt = 0;
@@ -1417,9 +1424,9 @@
   // A short confirmation in the middle of the top of the screen, for something that happened by
   // itself (the weekly Developer Mode extend) rather than a key press.
   var toastTimer = null;
-  function toast(text) {
+  function toast(text, icon) {
     var el = $("toast");
-    el.innerHTML = ICONS.check + "<span>" + esc(text) + "</span>";
+    el.innerHTML = (ICONS[icon] || ICONS.check) + "<span>" + esc(text) + "</span>";
     el.classList.add("on");
     clearTimeout(toastTimer);
     toastTimer = setTimeout(function () { el.classList.remove("on"); }, 9000);
@@ -3319,7 +3326,7 @@
     if (window.KidsMode && window.KidsMode.prayerLine) window.KidsMode.prayerLine(line);
     var due = null;
     try { due = P.due(ST, WXCFG, now); } catch (e) {}
-    if (due) toast(due);
+    if (due) toast(due, "moon");
   }
 
   function languageRows() {
@@ -3491,7 +3498,7 @@
     st.order.forEach(function (id) {
       var sc = sceneById(id);
       if (!sc) return;
-      var label = sc.own ? t("scene_photo", { n: sc.n }) : sc.mine ? sc.name || t("scene_mine", { n: sc.n }) : t("scene_" + id);
+      var label = sc.own ? t("scene_photo", { n: sc.n }) : sc.halal ? t("scene_" + id) : sc.mine ? sc.name || t("scene_mine", { n: sc.n }) : t("scene_" + id);
       rows.push({ kind: "check", key: "scene:" + id, label: label,
         thumb: sc.own ? sc.src : "backgrounds/" + sc.photo + ".jpg", checked: st.off.indexOf(id) < 0,
         act: function () { toggleScene(id); }, move: function (d) { moveScene(id, d); } });

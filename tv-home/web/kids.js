@@ -135,7 +135,7 @@
     root.innerHTML =
       '<header class="ktop"><div class="kwho">' + X.avatar(person) + "<div><b>" + esc(t("kids_shows_for", { name: name })) +
       "</b><small>" + esc(t("kids_mode")) + "</small></div></div>" +
-      '<div class="kright"><span class="ktime">' + esc(timeText()) + "</span>" +
+      '<div class="kright"><span class="kprayer" id="kprayer">' + esc(prayer) + '</span><span class="ktime">' + esc(timeText()) + "</span>" +
       '<div class="klock" data-row="0" data-i="0"><i>' + LOCK + "</i><span>" + esc(t("kids_grown_ups")) + "</span></div></div></header>" +
       (list.length ? '<section class="kshelf"><div class="kclip"><div class="ktrack">' + list.map(posterHTML).join("") + "</div></div></section>"
         : '<p class="kempty">' + esc(t("kids_empty")) + "</p>") +
@@ -330,7 +330,15 @@
     if (root) root.innerHTML = "";
   }
 
+  // Halal TV: the next prayer stays on screen in kids mode too (app.js hands the line every minute)
+  var prayer = "";
+  function prayerLine(line) {
+    prayer = line || "";
+    var el = root && root.querySelector(".kprayer");
+    if (el && el.textContent !== prayer) el.textContent = prayer;
+  }
   window.KidsMode = {
+    prayerLine: prayerLine,
     pinHash: pinHash,
     init: function (x) { X = x; setInterval(function () { if (on && root) { var el = root.querySelector(".ktime"); if (el) el.textContent = timeText(); if (pin && waitLeft()) render(); } }, 5000); },
     isKid: function (p) { return !!modeOf(p); },

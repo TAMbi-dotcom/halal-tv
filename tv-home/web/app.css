@@ -1697,7 +1697,7 @@ html.idle-photo .apps {
 
 /* ================= Kids mode (kids.js): one shelf of big posters, behind a parent PIN =================
    Drawn over everything. Flexbox and margins only (no gap), so an old TV WebView lays it out too. */
-html.kids-on .top, html.kids-on .home, html.kids-on .scenes, html.kids-on .ambient-music,
+html.kids-on .top, html.kids-on .home, html.kids-on .ambient-music,
 html.kids-on .gear-pop, html.kids-on .app-pop, html.kids-on .settings, html.kids-on .smart,
 html.kids-on #devwarn { display: none !important; }
 .kids {
@@ -1957,3 +1957,17 @@ html:not(.kids-on) .kids { display: none; }
 .lighter .pr-card, .old-engine .pr-card { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(14, 18, 30, 0.72); box-shadow: none; }
 [dir="rtl"] .pr-card { text-align: right; }
 .idle-prayer { margin-top: 0.6rem; font-size: 1.375rem; opacity: 0.85; }
+
+/* Halal TV: kids mode keeps the home's background (the scenes' photos, without their big clocks)
+   under a softer tint, and shows the next prayer beside the time. */
+html.kids-on .scene .gclock, html.kids-on .scene .fg { display: none !important; }
+html.kids-on .kids {
+  background:
+    radial-gradient(60rem 40rem at 12% 8%, rgba(255, 196, 92, 0.16), rgba(255, 196, 92, 0) 70%),
+    linear-gradient(160deg, rgba(20, 26, 56, 0.62) 0%, rgba(30, 22, 60, 0.55) 55%, rgba(15, 20, 40, 0.7) 100%);
+}
+.lighter .kids, .old-engine .kids { background: rgba(29, 33, 64, 0.82); }
+.kprayer { font-size: 1.5rem; font-weight: 600; margin-right: 1.75rem; padding: 0.5rem 1.125rem; border-radius: 2rem;
+  background: rgba(236, 201, 128, 0.2); box-shadow: inset 0 0 0 1px rgba(236, 201, 128, 0.45); }
+.kprayer:empty { display: none; }
+.toast { z-index: 60; }
