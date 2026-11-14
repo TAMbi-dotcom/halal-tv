@@ -233,6 +233,17 @@ class Server(private val ctx: Context, port: Int) : NanoWSD(port) {
             }
             // ---- on-TV extras ----
             "GET /api/adb" -> json(200, ok(JSONObject(Adb.status())))
+            // Halal TV: cleaning the box (Clean.kt). GET lists what can go; POST {action: "apply", packages: [...]}
+            // switches those off, {action: "restore"} switches back on everything Halal TV switched off.
+            "GET /api/clean" -> json(200, ok(Clean.info()))
+            "POST /api/clean" -> {
+                val b = body(s)
+                when (b.optString("action")) {
+                    "apply" -> json(200, ok(Clean.apply(b.optJSONArray("packages") ?: JSONArray())))
+                    "restore" -> json(200, ok(Clean.restore()))
+                    else -> json(400, err("action must be apply or restore"))
+                }
+            }
             "POST /api/adb/connect" -> { val tls = body(s).optString("route") == "tls"; if (tls) Adb.disconnect(); Thread { runCatching { Adb.ensure(interactive = true, preferTls = tls) }.onFailure { Log.w(TAG, "adb connect", it) }; Now.push() }.start(); json(200, ok(JSONObject(Adb.status()))) }
             "POST /api/adb/pair" -> {
                 val b = body(s)

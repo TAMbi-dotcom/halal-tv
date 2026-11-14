@@ -69,6 +69,7 @@ val copyWeb by tasks.registering(Copy::class) {
     from(remoteDist) { into("remote") }
     from(tvHomeWeb) { into("tv"); exclude("mock.js") }
     from(file("../../web")) { into("ontv") }
+    from(file("../../clean")) { into("clean") }   // Halal TV: box cleaning lists (scripts/gen-clean-index.py)
     doFirst {
         if (!File(remoteDist, "index.html").isFile) throw GradleException("No phone remote build at $remoteDist. Run npm run build in remote/ first.")
         if (!File(tvHomeWeb, "index.html").isFile) throw GradleException("No TV home page at $tvHomeWeb.")

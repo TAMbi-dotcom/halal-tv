@@ -264,6 +264,7 @@
     launch: '<svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>',
     chevron: '<svg viewBox="0 0 24 24"><path d="M9.5 5.5 16 12l-6.5 6.5"/></svg>',
     // the settings screen's sections
+    broom: '<svg viewBox="0 0 24 24"><path d="M14.5 3.5l6 6M17.5 6.5L11 13"/><path d="M11 13c-3 0-6 1.5-7 7 5.5-1 7-4 7-7z"/><path d="M6 17.5l2-2"/></svg>',
     moon: '<svg viewBox="0 0 24 24"><path d="M15.5 3.5a8.5 8.5 0 1 0 5 13.2A7 7 0 0 1 15.5 3.5z"/><path d="M18 6.5l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z"/></svg>',
     globe: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.5 3.8 5.3 3.8 8.5s-1.2 6-3.8 8.5c-2.6-2.5-3.8-5.3-3.8-8.5s1.2-6 3.8-8.5z"/></svg>',
     pin: '<svg viewBox="0 0 24 24"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></svg>',
@@ -3216,7 +3217,7 @@
   // also on the computer (/api/settings), so the phone and the TV agree.
   var ST_KEY = "tvhome.settings";
   var SECS = [["prayer", "moon"], ["language", "globe"], ["location", "pin"], ["weather", "cloud"], ["look", "look"],
-    ["apps", "apps"], ["people", "person"], ["quick", "bolt"], ["about", "info"]];
+    ["apps", "apps"], ["clean", "broom"], ["people", "person"], ["quick", "bolt"], ["about", "info"]];
   var SET = { col: "secs", sec: 0, ri: 0, keyFocus: null, sub: null, lift: null, confirm: null, dirty: false, typing: null,
     msg: "", geo: { q: "", list: null, busy: false, err: false } };
   var REPO_URL = "github.com/TAMbi-dotcom/halal-tv";
@@ -3309,6 +3310,7 @@
 
   function sectionRows(id) {
     if (id === "prayer") return prayerRows();
+    if (id === "clean") return cleanRows();
     if (id === "updates") return updateRows();
     if (id === "language") return languageRows();
     if (id === "location") return locationRows();
@@ -3341,6 +3343,63 @@
     var due = null;
     try { due = P.due(ST, WXCFG, now); } catch (e) {}
     if (due) toast(due, "moon");
+  }
+
+  // ---- Halal TV: cleaning the box (on-TV app, Clean.kt; lists from CleanYourTV) ----
+  // Groups of the maker's apps that can be switched off, from the tested list for this model. Tracking
+  // and promo groups start chosen, personal choices (casting, voice, preloaded apps) do not. Nothing
+  // is uninstalled, and Restore switches back on everything Halal TV switched off.
+  var CLEAN = { info: null, busy: false, err: "", pick: null };
+  function cleanLoad() {
+    if (CLEAN.busy) return;
+    CLEAN.busy = true; CLEAN.err = "";
+    api("GET", "/api/clean", null, 30000).then(function (j) {
+      CLEAN.info = j; CLEAN.busy = false;
+      if (!CLEAN.pick) {
+        CLEAN.pick = {};
+        (j.groups || []).forEach(function (g, i) { CLEAN.pick[i] = g.kind === "track" || g.kind === "promo"; });
+      }
+      if (SECS[SET.sec][0] === "clean") renderSettings();
+    }, function (e) {
+      CLEAN.busy = false; CLEAN.err = (e && e.message) || "error";
+      if (SECS[SET.sec][0] === "clean") renderSettings();
+    });
+  }
+  function cleanRun(body, done) {
+    status(t("clean_working"));
+    api("POST", "/api/clean", body, 120000).then(function (r) {
+      toast(done(r));
+      CLEAN.info = null; cleanLoad();
+    }, function (e) { toast(e.message); });
+  }
+  function cleanRows() {
+    if (OFFLINE) return [info("cl-na", t("clean_needs_app"))];
+    if (!CLEAN.info) {
+      if (!CLEAN.busy && !CLEAN.err) cleanLoad();
+      return [info("cl-load", CLEAN.err ? t("clean_needs_app") : t("loading_dots"))];
+    }
+    var j = CLEAN.info, rows = [];
+    if (j.adb === false) return [info("cl-adb", t("clean_needs_adb"))];
+    rows.push(info("cl-box", t("clean_box"), j.model + " · Android " + j.android));
+    rows.push(info("cl-list", t("clean_list"), j.list ? j.list.tv : t("clean_common")));
+    var groups = j.groups || [], chosen = [];
+    groups.forEach(function (g, i) {
+      var on = g.pkgs.filter(function (p) { return !p.off; });
+      if (CLEAN.pick[i]) on.forEach(function (p) { chosen.push(p.pkg); });
+      rows.push({ kind: "toggle", key: "cl-g" + i, label: t("clean_kind_" + g.kind) + " (" + g.pkgs.length + ")",
+        sub: g.title + " — " + g.pkgs.map(function (p) { return p.pkg.split(".").slice(-1)[0]; }).join(", "),
+        value: on.length === 0 ? t("clean_done") : CLEAN.pick[i] ? t("on") : t("off"),
+        act: function () { CLEAN.pick[i] = !CLEAN.pick[i]; renderSettings(); } });
+    });
+    if (!groups.length) rows.push(info("cl-none", t("clean_nothing")));
+    if (chosen.length) rows.push({ kind: "action", key: "cl-apply", label: t("clean_apply", { n: chosen.length }), sub: t("clean_apply_sub"),
+      act: function () { cleanRun({ action: "apply", packages: chosen }, function (r) { return t("clean_applied", { n: (r.done || []).length }); }); } });
+    var mine = (j.off || []).length;
+    if (mine) rows.push({ kind: "action", key: "cl-restore", danger: true, confirmText: t("confirm_reset"),
+      label: t("clean_restore", { n: mine }), sub: t("clean_restore_sub"),
+      act: function () { cleanRun({ action: "restore" }, function (r) { return t("clean_restored", { n: (r.back || []).length }); }); } });
+    rows.push(info("cl-note", t("clean_note")));
+    return rows;
   }
 
   function languageRows() {

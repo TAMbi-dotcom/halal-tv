@@ -249,6 +249,16 @@
       setTimeout(function () {
         if (down) return reject(new Error("The computer isn't answering."));
         // Now playing (#31): ?music=1, a song that previous and next step through, play and pause toggle
+        // Halal TV: box cleaning, as a Mi Box S answers it
+        if (path.indexOf("/api/clean") === 0) {
+          if (method === "POST") return resolve({ ok: true, done: body.packages || [], failed: [], back: [], off: body.action === "restore" ? [] : body.packages || [] });
+          return resolve({ ok: true, adb: true, model: "MIBOX4", device: "oneday", android: "9", off: [], list: { id: "xiaomi-mi-box-s", tv: "Xiaomi Mi Box S (MIBOX4, oneday), streaming box", os: "Android TV 9" },
+            groups: [
+              { title: "Xiaomi + Google telemetry and ad tracking", kind: "track", pkgs: [{ pkg: "com.miui.tv.analytics", off: false }, { pkg: "tv.alphonso.alphonso_eula", off: false }, { pkg: "com.google.android.feedback", off: false }] },
+              { title: "PatchWall, content rows, promos, auto-installs", kind: "promo", pkgs: [{ pkg: "com.mitv.tvhome.atv", off: false }, { pkg: "com.mitv.tvhome.michannel", off: false }, { pkg: "com.google.android.tvrecommendations", off: true }] },
+              { title: "Personal choice: casting, mirroring and the phone remote", kind: "choice", pkgs: [{ pkg: "com.google.android.apps.mediashell", off: false }, { pkg: "com.mitv.milinkservice", off: false }] }
+            ] });
+        }
         if (path.indexOf("/api/music") === 0) return resolve({ ok: true, music: arg("music") ? mockSong() : null });
         if (path.indexOf("/api/custom-cards") === 0) return resolve({ ok: true, cards: arg("cards") ? [
           { title: "Solar today", subtitle: "Roof panels", value: "18.4 kWh", app: "com.google.android.youtube.tv" },

@@ -11,6 +11,7 @@ under its own licence.
 | Amiri Quran font | `tv-home/web/fonts/amiri-quran-arabic-400-normal.woff2` | The Amiri Project Authors | SIL Open Font Licence 1.1 (`tv-home/web/fonts/amiri-quran.LICENSE`) |
 | Inter and Antonio fonts | `tv-home/web/fonts/` | their authors (via couch-tv) | SIL Open Font Licence 1.1 |
 | Scene and screensaver backgrounds | `tv-home/web/backgrounds/halal/` | made for Halal TV with ComfyUI (Z-Image) | free to use with Halal TV |
+| Box cleaning lists | `on-tv/clean/clean-index.json` (built by `scripts/gen-clean-index.py`) | CleanYourTV, Gathin and contributors, github.com/Gathin23/cleanyourtv | MIT (`third_party/cleanyourtv/LICENSE`) |
 | Weather and place search | runtime, Open-Meteo | open-meteo.com | free, attribution |
 
 ## Translations of the meanings of the Quran

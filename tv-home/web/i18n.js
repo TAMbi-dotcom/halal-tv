@@ -6512,6 +6512,38 @@
       stream_hide: "Yayın servislerini gizle", stream_show: "Yayın servislerini yeniden göster" }
   };
   for (var sl in S) { var st = STREAM_TXT[sl] || STREAM_TXT.en; for (var sk in st) S[sl][sk] = st[sk]; }
+  // Halal TV: cleaning the box (Home settings, Clean the box)
+  var CLEAN_TXT = {
+    en: { sec_clean: "Clean the box", clean_needs_app: "Needs the Halal TV app on the TV (option C).", clean_needs_adb: "Open the Halal TV app on the TV and press Connect ADB first.",
+      loading_dots: "Loading…", clean_box: "This box", clean_list: "Tested list", clean_common: "No list for this model: only apps many TVs switch off as tracking or ads",
+      clean_kind_track: "Tracking and ads", clean_kind_promo: "Maker's promos and pushed services", clean_kind_choice: "Optional",
+      clean_done: "Already off", clean_nothing: "Nothing to switch off on this box.", clean_apply: "Switch off the chosen apps ({n})",
+      clean_apply_sub: "Nothing is uninstalled. Restore switches them back on.", clean_working: "Working…", clean_applied: "Switched off: {n}.",
+      clean_restore: "Restore everything Halal TV switched off ({n})", clean_restore_sub: "Switches those apps back on", clean_restored: "Switched back on: {n}.",
+      clean_note: "Lists from CleanYourTV (github.com/Gathin23/cleanyourtv, MIT), tested by owners of each model. Home screens, setup, the remote, voice and core Android are never switched off." },
+    ru: { sec_clean: "Очистка приставки", clean_needs_app: "Нужно приложение Halal TV на телевизоре (вариант C).", clean_needs_adb: "Сначала откройте приложение Halal TV на телевизоре и нажмите Connect ADB.",
+      loading_dots: "Загрузка…", clean_box: "Приставка", clean_list: "Проверенный список", clean_common: "Для этой модели списка нет: только то, что многие телевизоры отключают как слежку и рекламу",
+      clean_kind_track: "Слежка и реклама", clean_kind_promo: "Реклама производителя и навязанные службы", clean_kind_choice: "По желанию",
+      clean_done: "Уже отключено", clean_nothing: "На этой приставке нечего отключать.", clean_apply: "Отключить выбранное ({n})",
+      clean_apply_sub: "Ничего не удаляется. «Вернуть» снова включит.", clean_working: "Выполняю…", clean_applied: "Отключено: {n}.",
+      clean_restore: "Вернуть всё, что отключил Halal TV ({n})", clean_restore_sub: "Снова включит эти приложения", clean_restored: "Включено обратно: {n}.",
+      clean_note: "Списки CleanYourTV (github.com/Gathin23/cleanyourtv, MIT), проверенные владельцами каждой модели. Главные экраны, настройка, пульт, голос и системные части Android никогда не отключаются." },
+    ar: { sec_clean: "تنظيف الجهاز", clean_needs_app: "يحتاج تطبيق Halal TV على التلفاز (الخيار C).", clean_needs_adb: "افتح تطبيق Halal TV على التلفاز واضغط Connect ADB أولًا.",
+      loading_dots: "جارٍ التحميل…", clean_box: "هذا الجهاز", clean_list: "قائمة مُجرّبة", clean_common: "لا قائمة لهذا الطراز: فقط ما تطفئه تلفزيونات كثيرة كتتبع وإعلانات",
+      clean_kind_track: "التتبع والإعلانات", clean_kind_promo: "عروض الشركة والخدمات المفروضة", clean_kind_choice: "اختياري",
+      clean_done: "متوقف بالفعل", clean_nothing: "لا شيء لإيقافه على هذا الجهاز.", clean_apply: "إيقاف المحدد ({n})",
+      clean_apply_sub: "لا يُحذف شيء. الاستعادة تعيد تشغيلها.", clean_working: "جارٍ التنفيذ…", clean_applied: "أُوقف: {n}.",
+      clean_restore: "استعادة كل ما أوقفه Halal TV ({n})", clean_restore_sub: "يعيد تشغيل هذه التطبيقات", clean_restored: "أُعيد تشغيل: {n}.",
+      clean_note: "القوائم من CleanYourTV (github.com/Gathin23/cleanyourtv، MIT) جرّبها مالكو كل طراز. لا تُوقف أبدًا الشاشات الرئيسية والإعداد وجهاز التحكم والصوت وأجزاء أندرويد الأساسية." },
+    tr: { sec_clean: "Kutuyu temizle", clean_needs_app: "TV'de Halal TV uygulaması gerekir (C seçeneği).", clean_needs_adb: "Önce TV'de Halal TV uygulamasını açıp Connect ADB'ye basın.",
+      loading_dots: "Yükleniyor…", clean_box: "Bu kutu", clean_list: "Denenmiş liste", clean_common: "Bu model için liste yok: yalnızca birçok TV'nin izleme ve reklam diye kapattıkları",
+      clean_kind_track: "İzleme ve reklam", clean_kind_promo: "Üretici tanıtımları ve dayatılan servisler", clean_kind_choice: "İsteğe bağlı",
+      clean_done: "Zaten kapalı", clean_nothing: "Bu kutuda kapatılacak bir şey yok.", clean_apply: "Seçilenleri kapat ({n})",
+      clean_apply_sub: "Hiçbir şey kaldırılmaz. Geri al yeniden açar.", clean_working: "Yapılıyor…", clean_applied: "Kapatıldı: {n}.",
+      clean_restore: "Halal TV'nin kapattıklarını geri aç ({n})", clean_restore_sub: "Bu uygulamaları yeniden açar", clean_restored: "Yeniden açıldı: {n}.",
+      clean_note: "Listeler CleanYourTV'den (github.com/Gathin23/cleanyourtv, MIT), her modelin sahiplerince denenmiştir. Ana ekranlar, kurulum, kumanda, ses ve Android'in çekirdeği asla kapatılmaz." }
+  };
+  for (var cl in S) { var ct = CLEAN_TXT[cl] || CLEAN_TXT.en; for (var ck in ct) S[cl][ck] = ct[ck]; }
   // the Halal TV scenes' names
   var SCENES_HALAL = {
     en: ["Desert night", "Mosque courtyard", "Misty valley", "Andalusian garden", "Winter village"],
