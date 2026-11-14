@@ -137,6 +137,15 @@
     return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; });
   }
 
+  // Building an Intl formatter is slow on a TV box (a Mi Box S takes milliseconds each), so each
+  // one is made once and kept.
+  var FMT = {};
+  function fmtr(loc, o) {
+    var k = loc + "|" + JSON.stringify(o);
+    if (!FMT[k]) FMT[k] = new Intl.DateTimeFormat(loc, o);
+    return FMT[k];
+  }
+
   function settings(ST) {
     var p = ST && ST.prayer && typeof ST.prayer === "object" ? ST.prayer : {}, out = {};
     for (var k in DEFAULTS) out[k] = p[k] != null ? p[k] : DEFAULTS[k];
@@ -167,7 +176,7 @@
   // The calendar date at the place, which may not be the TV's own time zone.
   function ymd(date, tz) {
     try {
-      var parts = new Intl.DateTimeFormat("en-US", { timeZone: tz, year: "numeric", month: "numeric", day: "numeric" }).formatToParts(date), o = {};
+      var parts = fmtr("en-US", { timeZone: tz, year: "numeric", month: "numeric", day: "numeric" }).formatToParts(date), o = {};
       parts.forEach(function (x) { o[x.type] = +x.value; });
       if (o.year && o.month && o.day) return [o.year, o.month, o.day];
     } catch (e) {}
@@ -188,7 +197,7 @@
   function fmt(date, place, clock24) {
     var o = { hour: "2-digit", minute: "2-digit", hour12: !clock24 };
     if (tzOf(place)) o.timeZone = tzOf(place);
-    try { return date.toLocaleTimeString(locale(), o); } catch (e) {
+    try { return fmtr(locale(), o).format(date); } catch (e) {
       var h = date.getHours(), m = date.getMinutes();
       return (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m;
     }
@@ -200,7 +209,7 @@
     try {
       var o = { year: "numeric", month: "numeric", day: "numeric" };
       if (tzOf(place)) o.timeZone = tzOf(place);
-      var parts = new Intl.DateTimeFormat("en-u-ca-islamic-umalqura-nu-latn", o).formatToParts(d), r = {};
+      var parts = fmtr("en-u-ca-islamic-umalqura-nu-latn", o).formatToParts(d), r = {};
       parts.forEach(function (x) { if (x.type === "year" || x.type === "month" || x.type === "day") r[x.type] = parseInt(x.value, 10); });
       if (r.year && r.month && r.day) return r;
     } catch (e) {}
@@ -211,7 +220,7 @@
     try {
       var o = { year: "numeric", month: "long", day: "numeric" };
       if (tzOf(place)) o.timeZone = tzOf(place);
-      var s = new Intl.DateTimeFormat(locale() + "-u-ca-islamic-umalqura", o).format(d);
+      var s = fmtr(locale() + "-u-ca-islamic-umalqura", o).format(d);
       // drop the era the WebView adds ("AH", "г. х.", "هـ"), then put Arabic's own back
       for (var i = 0; i < 3; i++) s = s.replace(/\s*(AH|A\.H\.|г\.(\s*х\.)?|هـ|H\.?)\s*$/i, "").trim();
       s = s.replace(/^Hicri\s+/i, "");
@@ -225,8 +234,17 @@
   }
 
   // Today's times, the next prayer (tomorrow's Fajr after Isha) and how long until it.
+  var memo = { key: "", val: null };
   function state(ST, place, now) {
-    var c = settings(ST), today = timesFor(c, place, now);
+    var c = settings(ST);
+    var key = Math.floor(now.getTime() / 60000) + "|" + JSON.stringify(c) + "|" + (place && [place.lat, place.lon, place.timezone].join(","));
+    if (memo.key === key) return memo.val;
+    memo.key = key;
+    memo.val = stateNow(c, place, now);
+    return memo.val;
+  }
+  function stateNow(c, place, now) {
+    var today = timesFor(c, place, now);
     if (!today) return null;
     var next = null;
     for (var i = 0; i < PRAYERS.length; i++) if (today[PRAYERS[i]] > now) { next = { key: PRAYERS[i], at: today[PRAYERS[i]] }; break; }
@@ -234,18 +252,31 @@
     return { c: c, today: today, next: next };
   }
 
-  function upcomingEvent(c, place, now) {
-    for (var i = 0; i <= 30; i++) {
-      var h = hijriParts(new Date(now.getTime() + i * 864e5), c, place);
-      if (!h) return null;
-      for (var j = 0; j < EVENTS.length; j++) if (EVENTS[j].m === h.month && EVENTS[j].d === h.day) return { e: EVENTS[j], d: i };
+  // The year's events: one pass over the next 400 days, worked out once a day (not on every key press).
+  var evMemo = { key: "", list: null };
+  function eventDays(c, place, now) {
+    var key = ymd(now, tzOf(place)).join("-") + "|" + c.hijri_adj + "|" + (place && place.timezone);
+    if (evMemo.key === key) return evMemo.list;
+    var found = {}, list = [];
+    for (var i = 0; i <= 400 && list.length < EVENTS.length; i++) {
+      var at = new Date(now.getTime() + i * 864e5), h = hijriParts(at, c, place);
+      if (!h) break;
+      for (var j = 0; j < EVENTS.length; j++) {
+        if (!found[j] && EVENTS[j].m === h.month && EVENTS[j].d === h.day) { found[j] = 1; list.push({ i: j, e: EVENTS[j], d: i, at: at }); }
+      }
     }
-    return null;
+    evMemo.key = key; evMemo.list = list;
+    return list;
+  }
+  function upcomingEvent(c, place, now) {
+    var list = eventDays(c, place, now), best = null;
+    for (var k = 0; k < list.length; k++) if (list[k].d <= 30 && (!best || list[k].d < best.d)) best = list[k];
+    return best;
   }
 
   function extras(s, place, now) {
     var out = [], h = hijriParts(now, s.c, place);
-    var wd = (function () { try { return new Intl.DateTimeFormat("en-US", { weekday: "short", timeZone: tzOf(place) }).format(now); } catch (e) { return ""; } })();
+    var wd = (function () { try { return fmtr("en-US", { weekday: "short", timeZone: tzOf(place) }).format(now); } catch (e) { return ""; } })();
     if (h && h.month === 9) {
       if (now < s.today.fajr) out.push(tx("ram_suhur", { left: left(s.today.fajr - now) }));
       else if (now < s.today.maghrib) out.push(tx("ram_iftar", { left: left(s.today.maghrib - now) }));
@@ -330,16 +361,10 @@
         adjust: function (d) { put(v + d); }, act: function () { put(v >= 30 ? -30 : v + 1); } });
     });
     out.push(ctx.head(tx("events")));
-    var now = new Date();
+    var days = eventDays(c, ctx.place, new Date());
     EVENTS.forEach(function (e, i) {
-      var d = null;
-      for (var j = 0; j <= 400 && d == null; j++) {
-        var hp = hijriParts(new Date(now.getTime() + j * 864e5), c, ctx.place);
-        if (!hp) break;
-        if (hp.month === e.m && hp.day === e.d) d = new Date(now.getTime() + j * 864e5);
-      }
-      var when = "";
-      if (d) try { when = d.toLocaleDateString(locale(), { day: "numeric", month: "long", year: "numeric", timeZone: tzOf(ctx.place) }); } catch (er) { when = d.toDateString(); }
+      var hit = days.filter(function (x) { return x.i === i; })[0], when = "";
+      if (hit) try { when = fmtr(locale(), { day: "numeric", month: "long", year: "numeric", timeZone: tzOf(ctx.place) }).format(hit.at); } catch (er) { when = hit.at.toDateString(); }
       out.push(ctx.info("pr-ev-" + i, evName(e), when));
     });
     out.push(ctx.info("pr-ev-note", tx("event_note")));

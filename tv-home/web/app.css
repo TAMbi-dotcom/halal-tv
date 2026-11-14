@@ -2000,3 +2000,7 @@ html.kids-on .kids {
    the Keep watching row (which reaches past the screen's edge on purpose) does not shift the page. */
 html[dir="rtl"], html[dir="rtl"] body { overflow-x: hidden; }
 [dir="rtl"] .tile, [dir="rtl"] .tile *, [dir="rtl"] .shelf-track *, [dir="rtl"] .people *, [dir="rtl"] .ktitle, [dir="rtl"] .kapp span { unicode-bidi: plaintext; }
+
+/* Halal TV, Lighter home: the ayat screensaver cuts instead of cross-fading, and no text glow. */
+html.lighter .ayat-layer, html.lighter .ayat-bg, html.lighter .ayat-card { transition: none; }
+html.lighter .ayat-card, html.lighter .ayat-foot, html.lighter .pr-card { text-shadow: none; }

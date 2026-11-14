@@ -397,7 +397,9 @@
     document.documentElement.classList.toggle("glass-lite", GLASS === "lite");
     // Lighter home: what was chosen in Home settings, else home.lighter, else on for a WebView with no
     // CSS grid (Android 6 and older, a 1 GB box), where blur, soft shadows and drift make it crawl (#59).
-    LIGHTER = typeof ST.lighter === "boolean" ? ST.lighter : typeof HOME.lighter === "boolean" ? HOME.lighter : OLD_ENGINE;
+    // Halal TV: also on by default on a box with 2 GB of memory or less (a Xiaomi Mi Box S reports
+    // MIBOX in its WebView, a Fire TV stick AFT), where the glass and blur made the home stutter.
+    LIGHTER = typeof ST.lighter === "boolean" ? ST.lighter : typeof HOME.lighter === "boolean" ? HOME.lighter : OLD_ENGINE || lowEnd();
     document.documentElement.classList.toggle("lighter", LIGHTER);
     ambientSync();
     movingTiles();
@@ -619,6 +621,12 @@
     if (KEEP_PHOTO) return;
     photo = (photo + 1) % classicPhotos().length;
     if (zone !== "shelf") showPhoto();
+  }
+
+  function lowEnd() {
+    var mem = 0, ua = "";
+    try { mem = navigator.deviceMemory || 0; ua = navigator.userAgent || ""; } catch (e) {}
+    return (mem > 0 && mem <= 2) || /MIBOX|\bAFT[A-Z0-9]|Android [5-8][;.]/i.test(ua) || /[?&]lowend\b/.test(Q);
   }
 
   // Open-Meteo gives Celsius; Fahrenheit is worked out here when Home settings asks for it.

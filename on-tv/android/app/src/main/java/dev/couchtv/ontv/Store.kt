@@ -45,7 +45,7 @@ object Store {
 
     /** Weather place for the home screen. Defaults to a public example place; set your own in /setup. */
     fun weather(): JSONObject = (str("weather")?.let { runCatching { JSONObject(it) }.getOrNull() })
-        ?: JSONObject().put("lat", -33.8688).put("lon", 151.2093).put("place", "Sydney").put("timezone", "Australia/Sydney")
+        ?: JSONObject().put("lat", 36.8969).put("lon", 30.7133).put("place", "Antalya").put("timezone", "Europe/Istanbul")   // Halal TV: Antalya until a place is chosen
 
     /** Where shows stream (JustWatch): the setup page's Country; without it, the TV's own region when
      *  the TV is not in English (a German TV in Germany: DE, issue #23), else AU. */
