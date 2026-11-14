@@ -679,14 +679,20 @@
     // Your own scenes are not listed here: tools/make-scene.py makes them and home.my_scenes in
     // config.json names them (myScenes() below, docs/MAKE-A-SCENE.md).
     // Each scene's clock and date positions are in app.css (.s-<id>, .scene-<id> .date).
-    // Halal TV: five scenes made in ComfyUI (backgrounds/halal/, made with tools/make-scene.py), drawn
+    // Halal TV: nine scenes made in ComfyUI (backgrounds/halal/, made with tools/make-scene.py), drawn
     // the way your own scenes are (app.css, .s-mine). couch-tv's own five scenes are still in
     // backgrounds/ (scene-night and the rest) but no longer take turns.
     halalScene("desert", true, "centre", 0.28),
     halalScene("courtyard", true, "centre", 0.24),
     halalScene("valley", false, "left", 0.13),   // the hills rise too high for a cut-out over the clock
     halalScene("garden", true, "left", 0.15),
-    halalScene("snow", false, "centre", 0.26)
+    halalScene("snow", false, "centre", 0.26),
+    halalScene("autumn", true, "left", 0.14),
+    halalScene("skyline", true, "centre", 0.15),
+    halalScene("olive", false, "left", 0.13),   // the trees on the left stand too tall for a cut-out
+    halalScene("spring", true, "left", 0.13),
+    halalScene("oasis", true, "left", 0.1),
+    halalScene("canyon", false, "left", 0.13)   // the rocks stand too tall for a cut-out
   ];
   function halalScene(id, cutout, x, y) {
     return { id: id, photo: "halal/scene-" + id, fg: cutout, glass: true, mine: true, halal: true, n: 0, name: "",
@@ -1776,7 +1782,7 @@
         ov.classList.toggle("quiet-hours", isQuietHours(SMART_IDLE.quiet_hours));
         var ayat = SMART_IDLE.home_action === "ayat" && window.HalalAyat && window.HalalAyat.count() > 0;
         ov.classList.toggle("ayat-mode", !!ayat);
-        if (ayat) window.HalalAyat.start(ov);
+        if (ayat) { window.HalalAyat.start(ov); holdAwake(60); }
         ov.classList.add("active");
       }
     } else if (ov) {
@@ -4684,8 +4690,26 @@
     });
   }
 
+  // Halal TV: Android's own screensaver (often after 5 minutes, or a cleaner's clock) would start
+  // before the ayat screensaver. While the home is in front, the screen is kept on until the ayat
+  // have shown for an hour; then Android's own screensaver or sleep takes over as usual.
+  var awakeSent = 0;
+  function holdAwake(minutes) {
+    if (!window.TVOS || typeof window.TVOS.keepAwake !== "function") return;
+    try { window.TVOS.keepAwake(minutes); } catch (e) { /* older app */ }
+  }
+  function awakeForIdle() {
+    if (!SMART_IDLE.enabled || SMART_IDLE.home_action !== "ayat") return;
+    var now = Date.now();
+    if (now - awakeSent < 30000) return;
+    awakeSent = now;
+    holdAwake(SMART_IDLE.home_idle_minutes + 1);
+  }
+  setTimeout(awakeForIdle, 3000);
+
   document.addEventListener("keydown", function (e) {
     lastKeyAt = Date.now();
+    awakeForIdle();
     resetSmartIdle();
     if (screenOffActive) {
       e.preventDefault();

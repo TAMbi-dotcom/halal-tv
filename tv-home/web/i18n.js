@@ -6546,12 +6546,16 @@
   for (var cl in S) { var ct = CLEAN_TXT[cl] || CLEAN_TXT.en; for (var ck in ct) S[cl][ck] = ct[ck]; }
   // the Halal TV scenes' names
   var SCENES_HALAL = {
-    en: ["Desert night", "Mosque courtyard", "Misty valley", "Andalusian garden", "Winter village"],
-    ru: ["Ночь в пустыне", "Двор мечети", "Туманная долина", "Андалусский сад", "Зимняя деревня"],
-    ar: ["ليل الصحراء", "صحن المسجد", "وادٍ ضبابي", "حديقة أندلسية", "قرية شتوية"],
-    tr: ["Çölde gece", "Cami avlusu", "Sisli vadi", "Endülüs bahçesi", "Kış köyü"]
+    en: ["Desert night", "Mosque courtyard", "Misty valley", "Andalusian garden", "Winter village",
+      "Autumn lake", "City at dusk", "Olive grove", "Spring meadow", "Oasis at sunset", "Valley of rock chimneys"],
+    ru: ["Ночь в пустыне", "Двор мечети", "Туманная долина", "Андалусский сад", "Зимняя деревня",
+      "Осеннее озеро", "Город в сумерках", "Оливковая роща", "Весенний луг", "Оазис на закате", "Долина каменных столбов"],
+    ar: ["ليل الصحراء", "صحن المسجد", "وادٍ ضبابي", "حديقة أندلسية", "قرية شتوية",
+      "بحيرة الخريف", "المدينة عند الغسق", "بستان الزيتون", "مرج الربيع", "واحة عند الغروب", "وادي المداخن الصخرية"],
+    tr: ["Çölde gece", "Cami avlusu", "Sisli vadi", "Endülüs bahçesi", "Kış köyü",
+      "Sonbahar gölü", "Alacakaranlıkta şehir", "Zeytinlik", "Bahar çayırı", "Gün batımında vaha", "Peri bacaları vadisi"]
   };
-  ["desert", "courtyard", "valley", "garden", "snow"].forEach(function (id, i) {
+  ["desert", "courtyard", "valley", "garden", "snow", "autumn", "skyline", "olive", "spring", "oasis", "canyon"].forEach(function (id, i) {
     for (var l in S) S[l]["scene_" + id] = (SCENES_HALAL[l] || SCENES_HALAL.en)[i];
   });
 

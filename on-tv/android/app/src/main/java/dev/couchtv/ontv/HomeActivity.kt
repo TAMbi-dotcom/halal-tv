@@ -62,6 +62,8 @@ class HomeActivity : Activity() {
      * the page is out of sight, drop the WebView; onStart builds it again. No timer, so normal use
      * never pays for a rebuild. The activity stays, so Back still lands here.
      */
+    private val letGo = Runnable { runCatching { window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) } }
+
     private fun release() {
         val w = web ?: return
         if (front || isFinishing || isDestroyed) return
@@ -208,6 +210,20 @@ class HomeActivity : Activity() {
                     lp.screenBrightness = if (off) 0.0f else WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
                     window.attributes = lp
                 }
+            }
+            return true
+        }
+        /** Halal TV: keep the screen on for this many minutes while the home is in front (0: let go now),
+         *  so Android's own screensaver does not start before the ayat screensaver. The window flag only
+         *  counts while this window is showing, so another app or sleep is never held up. */
+        @JavascriptInterface fun keepAwake(minutes: Int): Boolean {
+            val m = minutes.coerceIn(0, 120)
+            main.post {
+                main.removeCallbacks(letGo)
+                if (m > 0) {
+                    window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                    main.postDelayed(letGo, m * 60_000L)
+                } else letGo.run()
             }
             return true
         }

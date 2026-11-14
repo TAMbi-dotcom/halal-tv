@@ -5,9 +5,9 @@
 (function () {
   "use strict";
 
-  var BGS = ["ss-sea", "ss-ridges", "ss-pattern", "ss-clouds", "ss-lanterns"];
+  var BGS = ["ss-sea", "ss-ridges", "ss-pattern", "ss-clouds", "ss-lanterns", "ss-lake", "ss-mist", "ss-navy", "ss-rain", "ss-dunes"];
   var EVERY = 30000;
-  var layer = null, timer = null, i = 0, b = 0, front = 0;
+  var layer = null, timer = null, i = 0, b = 0, front = 0, fresh = true;
 
   function lang() { var l = window.I18N ? window.I18N.lang() : "en"; return l === "es-MX" ? "es" : l; }
   function esc(s) {
@@ -41,7 +41,8 @@
     layer.querySelector(".ayat-by").textContent = l === "ar" ? "" : (by[l] || by.en || "");
     card.classList.add("in");
     // the background changes every second ayah, cross-fading between two layers
-    if (i % 2 === 0) {
+    if (i % 2 === 0 || fresh) {   // fresh: the first ayah after start always has a background
+      fresh = false;
       var bgs = layer.querySelectorAll(".ayat-bg");
       front = 1 - front;
       bgs[front].style.backgroundImage = 'url("backgrounds/halal/' + BGS[b % BGS.length] + '.jpg")';
@@ -64,6 +65,7 @@
     var all = list();
     i = all.length ? Math.floor(Math.random() * all.length) : 0;
     b = Math.floor(Math.random() * BGS.length);
+    fresh = true;
     layer.classList.add("on");
     show();
     clearInterval(timer);
