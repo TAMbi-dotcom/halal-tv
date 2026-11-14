@@ -15,7 +15,7 @@ import java.util.concurrent.Executors
  */
 object Music {
     private const val PAUSE_KEEP_MS = 10 * 60_000L
-    private val OWN = setOf("app.couchtv.launcher", "dev.couchtv.ontv")
+    private val OWN = setOf("app.couchtv.launcher", "dev.couchtv.ontv", "org.halaltv.tv")
     private var readAt = 0L
     private var item: JSONObject? = null
     private var last: Pair<String, Long>? = null          // package, when it was last seen playing

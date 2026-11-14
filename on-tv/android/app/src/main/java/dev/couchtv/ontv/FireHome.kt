@@ -19,13 +19,13 @@ import android.util.Log
  *
  *  1. The accessibility watcher (WatchService), event-driven. Needs two one-off grants over ADB
  *     from a computer, kept across reboots:
- *       adb shell pm grant dev.couchtv.ontv android.permission.WRITE_SECURE_SETTINGS
- *       adb shell appops set dev.couchtv.ontv SYSTEM_ALERT_WINDOW allow
+ *       adb shell pm grant org.halaltv.tv android.permission.WRITE_SECURE_SETTINGS
+ *       adb shell appops set org.halaltv.tv SYSTEM_ALERT_WINDOW allow
  *     Fire OS 6 runs Amazon's own accessibility manager and never binds it (issue #50), so the
  *     setting reads as on while nothing listens: the app then falls through to the next way.
  *  2. App-usage events, polled while the screen is on. Needs usage access, the third grant (give it
  *     on every Fire TV: it is only used where the watcher is not connected):
- *       adb shell appops set dev.couchtv.ontv GET_USAGE_STATS allow
+ *       adb shell appops set org.halaltv.tv GET_USAGE_STATS allow
  *  3. The activity log over the TV's own ADB, where that still works (no polling).
  *
  * Runs only on a Fire TV (Amazon's launcher is installed) with "Use as home screen" on, so it does
@@ -295,6 +295,6 @@ object FireHome {
 
     /** The home the system falls back to for everything that is not the Home key itself. Best-effort. */
     private fun guard() {
-        runCatching { Adb.shell("cmd package set-home-activity ${BuildConfig.APPLICATION_ID}/.HomeAlias", 8_000) }
+        runCatching { Adb.shell("cmd package set-home-activity ${BuildConfig.APPLICATION_ID}/${App.HOME_ALIAS}", 8_000) }
     }
 }

@@ -7,7 +7,8 @@
        tick "Always allow" and press Allow.
     3. Installs Halal TV, or updates it in place. If the copy on the TV was signed with another key,
        it asks before removing it (its settings go with it).
-    4. Makes Halal TV the home screen (the TV's own home stays installed) and opens it.
+    4. Makes Halal TV the home screen (the TV's own home stays installed), lets it show the
+       prayer-time card over other apps, and opens it.
 
   Use:
     powershell -ExecutionPolicy Bypass -File install-windows.ps1 -Tv 192.168.1.111
@@ -21,7 +22,9 @@ param(
   [string]$Repo = "TAMbi-dotcom/halal-tv"
 )
 $ErrorActionPreference = "Stop"
-$Pkg = "dev.couchtv.ontv"
+$Pkg = "org.halaltv.tv"
+$OldPkg = "dev.couchtv.ontv"   # test builds before 14 November 2026
+$Cls = "dev.couchtv.ontv"      # the code's own namespace, used in component names
 $Dir = Join-Path $env:LOCALAPPDATA "HalalTV"
 New-Item -ItemType Directory -Force -Path $Dir | Out-Null
 
@@ -81,10 +84,21 @@ if ($out -match "INSTALL_FAILED_UPDATE_INCOMPATIBLE|signatures do not match") {
 if ($out -notmatch "Success") { throw "Install failed: $out" }
 Say "Installed."
 
+# The first test builds used couch-tv's id. Two copies would both answer the Home button.
+$old = (& $Adb -s "${Tv}:5555" shell pm list packages $OldPkg) -join ""
+if ($old -match "package:$([regex]::Escape($OldPkg))\b") {
+  Say "An older Halal TV test build ($OldPkg) is also on the TV."
+  $yes = Read-Host "Remove the old test build? Its settings go with it (y/N)"
+  if ($yes -eq "y") { & $Adb -s "${Tv}:5555" uninstall $OldPkg | Out-Host }
+  else { Say "Kept. If Home opens the old one, remove it in Settings, Apps." }
+}
+
 Step "4. Home screen"
-& $Adb -s "${Tv}:5555" shell pm enable "$Pkg/.HomeAlias" | Out-Null
-& $Adb -s "${Tv}:5555" shell cmd package set-home-activity "$Pkg/.HomeAlias" | Out-Host
+& $Adb -s "${Tv}:5555" shell pm enable "$Pkg/$Cls.HomeAlias" | Out-Null
+& $Adb -s "${Tv}:5555" shell cmd package set-home-activity "$Pkg/$Cls.HomeAlias" | Out-Host
 & $Adb -s "${Tv}:5555" shell pm grant $Pkg android.permission.READ_TV_LISTINGS 2>$null | Out-Null
-& $Adb -s "${Tv}:5555" shell am start -n "$Pkg/.SetupActivity" | Out-Null
+# The prayer-time card over other apps (Netflix, YouTube...) needs "display over other apps".
+& $Adb -s "${Tv}:5555" shell appops set $Pkg SYSTEM_ALERT_WINDOW allow 2>$null | Out-Null
+& $Adb -s "${Tv}:5555" shell am start -n "$Pkg/$Cls.SetupActivity" | Out-Null
 Say "Done. On the TV: press Connect ADB in Halal TV (and Allow), then press Home."
 Say "Undo: Settings, Apps, Halal TV, Uninstall."

@@ -328,6 +328,27 @@
     return null;
   }
 
+  // The next 26 hours of notes (each prayer, and the reminder before it), for the TV app to show over
+  // other apps (on-tv PrayerNotify.kt). Empty when notes are off.
+  function schedule(ST, place, now) {
+    var s = state(ST, place, now);
+    if (!s || !s.c.notify) return [];
+    var out = [], end = now.getTime() + 26 * 3600e3;
+    [0, 1].forEach(function (d) {
+      var tms = d ? timesFor(s.c, place, new Date(now.getTime() + 864e5)) : s.today;
+      if (!tms) return;
+      PRAYERS.forEach(function (k) {
+        var at = tms[k].getTime();
+        if (s.c.before) {
+          var b = at - s.c.before * 60000;
+          if (b > now.getTime() && b < end) out.push({ at: b, text: tx("note_soon", { name: name(k), m: s.c.before }) });
+        }
+        if (at > now.getTime() && at < end) out.push({ at: at, text: tx("note_now", { name: name(k) }) });
+      });
+    });
+    return out.sort(function (a, b) { return a.at - b.at; });
+  }
+
   // Home settings, Prayer times. ctx: { ST, save, info, head, place, refresh }.
   function rows(ctx) {
     var c = settings(ctx.ST);
@@ -373,6 +394,6 @@
 
   window.HalalPrayer = {
     settings: settings, state: state, timesFor: timesFor, cardHTML: cardHTML, lineText: lineText,
-    due: due, rows: rows, title: function () { return tx("sec"); }, hijriText: hijriText, names: NAMES
+    due: due, rows: rows, schedule: schedule, title: function () { return tx("sec"); }, hijriText: hijriText, names: NAMES
   };
 })();

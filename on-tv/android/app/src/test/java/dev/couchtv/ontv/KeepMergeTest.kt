@@ -5,7 +5,7 @@ import org.junit.Test
 
 /** Keep watching's rules for Android's Watch Next rows on the on-TV app (#122). */
 class KeepMergeTest {
-    private val self = "dev.couchtv.ontv"
+    private val self = "org.halaltv.tv"
     private fun wn(show: String, pkg: String, t: Long) = KeepMerge.Card(show, pkg, t, true, "wn $show $t")
     private fun mine(show: String, pkg: String, t: Long) = KeepMerge.Card(show, pkg, t, false, "history $show $t")
 

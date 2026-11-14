@@ -7,7 +7,7 @@ android {
     namespace = "dev.couchtv.ontv"
     compileSdk = 34
     defaultConfig {
-        applicationId = "dev.couchtv.ontv"
+        applicationId = "org.halaltv.tv"   // Halal TV's own id (the code keeps couch-tv's namespace)
         minSdk = 23          // Android 6.0. Wireless debugging pairing needs Android 11+ on the TV.
         targetSdk = 34
         versionCode = 12

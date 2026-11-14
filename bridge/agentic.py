@@ -191,7 +191,7 @@ ALIASES_AU = {"stan": "stan", "binge": "binge", "iview": "abc-iview", "abc": "ab
            "nine": "9now", "9 now": "9now", "channel 7": "7plus", "seven": "7plus",
            "7 plus": "7plus", "channel 10": "10play", "ten": "10play", "10 play": "10play",
            "tenplay": "10play"}
-NEVER_UNINSTALL = {"com.android.vending", "dev.couchtv.ontv",
+NEVER_UNINSTALL = {"com.android.vending", "dev.couchtv.ontv", "org.halaltv.tv",
                    "com.google.android.apps.tv.launcherx", "com.google.android.tvlauncher"}
 
 

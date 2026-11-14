@@ -3,7 +3,7 @@
 
 Talks to the TV with the pure-Python adb_shell library and your computer's existing ADB key, so it
 works where the platform-tools adb binary is blocked (macOS Local Network). It only ever installs,
-inspects or removes the on-TV app (dev.couchtv.ontv). It never disables, enables or replaces any
+inspects or removes the on-TV app (org.halaltv.tv). It never disables, enables or replaces any
 other package and never changes the default home app.
 
   python3 real-tv.py --ip <TV_IP> check                 what is installed, which home app wins, ADB port
@@ -29,7 +29,7 @@ import sys
 import time
 import zipfile
 
-PKG = "dev.couchtv.ontv"
+PKG = "org.halaltv.tv"   # Halal TV (couch-tv's was dev.couchtv.ontv)
 
 
 def connect(ip, key):
@@ -139,7 +139,7 @@ def main():
         elif a.cmd == "devopts":
             print(sh("am start -a android.settings.APPLICATION_DEVELOPMENT_SETTINGS"))
         elif a.cmd == "open":
-            print(sh(f"am start -n {PKG}/.SetupActivity"))
+            print(sh(f"am start -n {PKG}/dev.couchtv.ontv.SetupActivity"))
         elif a.cmd == "code":
             xml = sh("uiautomator dump /dev/tty", 30)
             m = re.search(r"Phone code\s+(\d{3}) (\d{3})", xml)

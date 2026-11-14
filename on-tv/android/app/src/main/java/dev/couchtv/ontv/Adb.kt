@@ -402,6 +402,6 @@ object Adb {
 
         override fun getPrivateKey() = key
         override fun getCertificate() = cert
-        override fun getDeviceName() = "couch-tv"
+        override fun getDeviceName() = "Halal TV"
     }
 }

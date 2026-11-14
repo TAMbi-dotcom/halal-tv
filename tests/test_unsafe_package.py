@@ -11,7 +11,7 @@ import server  # noqa: E402
 BAD = ["a.b;touch /sdcard/proof", "a.b && reboot", "a.b'", "a.b$(id)", "a.b`id`", "a.b|sh",
        "a.b\nid", "nodots", ".a.b", "a..b", "", None, 5, "a." * 150 + "b"]
 GOOD = ["com.netflix.ninja", "com.google.android.youtube.tv", "au.net.abc.iview", "tv.twitch.android.app",
-        "com.disney.disneyplus", "dev.couchtv.ontv"]
+        "com.disney.disneyplus", "dev.couchtv.ontv", "org.halaltv.tv"]
 
 
 class CheckPackage(unittest.TestCase):

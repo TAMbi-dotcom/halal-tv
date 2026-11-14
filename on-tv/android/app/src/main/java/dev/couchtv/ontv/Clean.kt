@@ -29,7 +29,7 @@ object Clean {
         // and Halal TV's own additions: the photo screensaver, which has no replacement here
         "com.google.android.backdrop", "com.google.android.apps.tv.dreamx")
     private val NEEDED = Regex(
-        "^(android|app\\.couchtv\\..*|dev\\.couchtv\\..*|com\\.android\\..*|com\\.google\\.android\\.gms|com\\.google\\.android\\.gsf|.*webview.*|" +
+        "^(android|app\\.couchtv\\..*|dev\\.couchtv\\..*|org\\.halaltv\\..*|com\\.android\\..*|com\\.google\\.android\\.gms|com\\.google\\.android\\.gsf|.*webview.*|" +
         "com\\.google\\.android\\.trichromelibrary|com\\.google\\.android\\.tv\\.remote\\.service|com\\.google\\.android\\.katniss|" +
         "com\\.google\\.android\\.permissioncontroller|com\\.google\\.android\\.packageinstaller|com\\.google\\.android\\.networkstack.*|" +
         "com\\.google\\.android\\.ext\\..*|com\\.google\\.android\\.providers\\..*|com\\.sony\\.dtv\\.sonysystemservice|com\\.sony\\.dtv\\.tvx|" +

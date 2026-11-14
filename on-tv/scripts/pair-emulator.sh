@@ -6,7 +6,7 @@ serial="${1:-emulator-5554}"
 base="${2:-http://localhost:15400}"
 case "$serial" in emulator-*) ;; *) echo "emulator only" >&2; exit 2 ;; esac
 adb="${ADB:-adb}"
-"$adb" -s "$serial" shell am start -n dev.couchtv.ontv/.SetupActivity >/dev/null
+"$adb" -s "$serial" shell am start -n org.halaltv.tv/dev.couchtv.ontv.SetupActivity >/dev/null
 sleep 1.5
 curl -s -X POST "$base/api/pair/start" >/dev/null
 sleep 1.5

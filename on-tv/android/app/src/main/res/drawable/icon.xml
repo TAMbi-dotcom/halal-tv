@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Halal TV icon: a gold arch, crescent and star on deep green. Made by scripts/make-icons.py. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="48dp" android:height="48dp"
     android:viewportWidth="48" android:viewportHeight="48">
-    <path android:fillColor="#0D1E19" android:pathData="M0,0h48v48h-48z" />
-    <path android:fillColor="#191D1A" android:pathData="M12,10h24v14h-24z" />
-    <path android:fillColor="#131614" android:pathData="M12,25h24v13h-24z" />
-    <path android:fillColor="#F2EAD8" android:pathData="M18,15h3v19h-3z M27,15h3v19h-3z M21,23h6v3h-6z" />
-    <path android:fillColor="#FFB52E" android:pathData="M12,41h24v2h-24z" />
+    <path android:fillColor="#0B2A22" android:pathData="M0,0h48v48h-48z" />
+    <path android:fillColor="#123B30" android:strokeColor="#D9B45A" android:strokeWidth="1.94" android:strokeLineJoin="round" android:pathData="M10.32,42.81 L10.32,21.15 C10.32,11.43 17.98,7.9 24,3.48 C30.02,7.9 37.68,11.43 37.68,21.15 L37.68,42.81 Z" />
+    <path android:fillColor="#D9B45A" android:pathData="M22.39,16.6 A9.12,9.12 0 1,0 31.53,28.55 A7.52,7.52 0 0,1 22.39,16.6 Z" />
+    <path android:fillColor="#D9B45A" android:pathData="M29.24,18.76 L29.89,20.49 L31.74,20.57 L30.29,21.72 L30.79,23.5 L29.24,22.48 L27.7,23.5 L28.2,21.72 L26.75,20.57 L28.6,20.49 Z" />
 </vector>

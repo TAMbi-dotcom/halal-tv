@@ -16,7 +16,7 @@ import org.json.JSONObject
  * Where the app's own ADB never connects (current Fire OS blocks it, CVE-2024-27350), Keep watching
  * cannot see what plays, so it lists these rows as cards instead (#122), the way the TV home app
  * does. The permission is then granted once from a computer:
- *   adb shell pm grant dev.couchtv.ontv android.permission.READ_TV_LISTINGS
+ *   adb shell pm grant org.halaltv.tv android.permission.READ_TV_LISTINGS
  */
 object WatchNext {
     data class Row(val pkg: String, val title: String, val episodeTitle: String?, val season: String?,

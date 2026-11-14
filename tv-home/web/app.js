@@ -3328,7 +3328,7 @@
     return window.HalalPrayer.rows({ ST: ST, save: saveSettings, info: info, head: head, place: WXCFG,
       refresh: function () { renderPrayer(true); } });
   }
-  var prayerShown = "";
+  var prayerShown = "", prayerSent = "", prayerSentHour = -1;
   function renderPrayer(force) {
     var P = window.HalalPrayer, el = $("prayer");
     if (!P || !el) return;
@@ -3340,6 +3340,16 @@
     var ip = $("idle-prayer"); if (ip) ip.textContent = line;
     if (window.HalalAyat && idleAmbientActive) window.HalalAyat.foot($("idle-clock") ? $("idle-clock").textContent : "", line);
     if (window.KidsMode && window.KidsMode.prayerLine) window.KidsMode.prayerLine(line);
+    // hand the TV app the next day's notes, so they show over other apps too (on-TV app only)
+    if (!OFFLINE && !MOCK && !PREVIEW) {
+      var sched = "";
+      try { sched = JSON.stringify(P.schedule(ST, WXCFG, now)); } catch (e) {}
+      var hour = Math.floor(now.getTime() / 3600e3);
+      if (sched && (sched !== prayerSent || hour !== prayerSentHour)) {
+        prayerSent = sched; prayerSentHour = hour;
+        api("POST", "/api/prayer", { items: JSON.parse(sched) }).then(function () {}, function () {});
+      }
+    }
     var due = null;
     try { due = P.due(ST, WXCFG, now); } catch (e) {}
     if (due) toast(due, "moon");

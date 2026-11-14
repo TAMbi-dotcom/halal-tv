@@ -104,11 +104,15 @@ class App : Application() {
                 ?.firstOrNull { it is java.net.Inet4Address && !it.isLoopbackAddress }?.hostAddress
         }.getOrNull()
 
+        /** The alias's full class name: Halal TV's application id (org.halaltv.tv) differs from the code's
+         *  namespace (dev.couchtv.ontv), so "${'$'}packageName.HomeAlias" would name a class that does not exist. */
+        const val HOME_ALIAS = "dev.couchtv.ontv.HomeAlias"
+
         /** The HOME intent filter sits on an alias that is off by default, so installing never steals the home button. */
-        fun homeEnabled(c: Context) = c.packageManager.getComponentEnabledSetting(ComponentName(c, "${c.packageName}.HomeAlias")) ==
+        fun homeEnabled(c: Context) = c.packageManager.getComponentEnabledSetting(ComponentName(c, HOME_ALIAS)) ==
             PackageManager.COMPONENT_ENABLED_STATE_ENABLED
 
-        fun setHomeEnabled(c: Context, on: Boolean) = c.packageManager.setComponentEnabledSetting(ComponentName(c, "${c.packageName}.HomeAlias"),
+        fun setHomeEnabled(c: Context, on: Boolean) = c.packageManager.setComponentEnabledSetting(ComponentName(c, HOME_ALIAS),
             if (on) PackageManager.COMPONENT_ENABLED_STATE_ENABLED else PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP)
     }
 }
@@ -147,6 +151,7 @@ class BridgeService : Service() {
         // Xiaomi: PatchWall opened itself whenever the screen came on (FireHome.onScreenOn checks the switch).
         if (FireHome.isXiaomi) runCatching { registerReceiver(screenOn, android.content.IntentFilter(Intent.ACTION_SCREEN_ON)) }
         Now.start()
+        PrayerNotify.start(this)   // Halal TV: prayer notes over other apps
         Thread {
             runCatching { if (Adb.everAllowed || Adb.paired) Adb.ensure() }
             reenableStockHome()

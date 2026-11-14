@@ -235,6 +235,8 @@ class Server(private val ctx: Context, port: Int) : NanoWSD(port) {
             "GET /api/adb" -> json(200, ok(JSONObject(Adb.status())))
             // Halal TV: cleaning the box (Clean.kt). GET lists what can go; POST {action: "apply", packages: [...]}
             // switches those off, {action: "restore"} switches back on everything Halal TV switched off.
+            // Halal TV: the next day's prayer notes, worked out by the home page (PrayerNotify.kt)
+            "POST /api/prayer" -> { PrayerNotify.save(body(s).optJSONArray("items") ?: JSONArray()); json(200, ok()) }
             "GET /api/clean" -> json(200, ok(Clean.info()))
             "POST /api/clean" -> {
                 val b = body(s)

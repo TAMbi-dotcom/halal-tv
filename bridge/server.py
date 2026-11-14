@@ -2670,7 +2670,7 @@ def wn_fresher(h, rows):
 # point is music (Spotify, YouTube Music) carrying on behind the home. A session counts while it
 # plays, and stays a while after a pause so the card's play button can start it again.
 MUSIC_PAUSE_KEEP = 600          # seconds a paused session stays on the card
-OWN_PACKAGES = {"app.couchtv.launcher", "dev.couchtv.ontv"}
+OWN_PACKAGES = {"app.couchtv.launcher", "dev.couchtv.ontv", "org.halaltv.tv"}
 music_states = {}             # per TV: {"read_at", "item", "last"}
 music_art = {}                  # (artist, title) -> picture url or ""
 music_art_pending = set()

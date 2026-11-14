@@ -49,7 +49,7 @@ fi
 
 if [ "$UNDO_OK" = 1 ]; then
   echo "2/3  Removing the couch-tv apps"
-  for p in ${APPS:-app.couchtv.launcher dev.couchtv.ontv}; do
+  for p in ${APPS:-app.couchtv.launcher dev.couchtv.ontv org.halaltv.tv}; do
     if ! LISTED=$("$PY" "$T" shell "pm list packages $p"); then
       note_fail "checking for $p"
     elif echo "$LISTED" | grep -q "package:$p\$"; then
