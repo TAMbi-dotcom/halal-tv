@@ -2004,3 +2004,7 @@ html[dir="rtl"], html[dir="rtl"] body { overflow-x: hidden; }
 /* Halal TV, Lighter home: the ayat screensaver cuts instead of cross-fading, and no text glow. */
 html.lighter .ayat-layer, html.lighter .ayat-bg, html.lighter .ayat-card { transition: none; }
 html.lighter .ayat-card, html.lighter .ayat-foot, html.lighter .pr-card { text-shadow: none; }
+
+/* Halal TV: a Beautiful Name of Allah in the ayat screensaver, larger and in gold. */
+.ayat-card.asma .ayat-ar { font-size: 7rem; line-height: 1.7; color: #f3dfa8; }
+.ayat-card.asma .ayat-tr { font-size: 2rem; }

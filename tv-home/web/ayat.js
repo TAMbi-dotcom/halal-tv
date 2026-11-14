@@ -1,13 +1,14 @@
 // Halal TV: the ayat screensaver. When the home has been left alone (Home settings, Look, "When the
 // home sits idle": Ayat), app.js opens the idle overlay and calls HalalAyat.start(). Each ayah stays
 // 30 seconds over one of the calm backgrounds in backgrounds/halal/ss-*.jpg, in Arabic with the
-// translation of its meanings in the home's language (ayat-data.js says whose). Any key closes it.
+// translation of its meanings in the home's language (ayat-data.js says whose). Every fourth card is
+// one of the Beautiful Names of Allah (names-data.js), from the Name of the day on. Any key closes it.
 (function () {
   "use strict";
 
   var BGS = ["ss-sea", "ss-ridges", "ss-pattern", "ss-clouds", "ss-lanterns", "ss-lake", "ss-mist", "ss-navy", "ss-rain", "ss-dunes"];
   var EVERY = 30000;
-  var layer = null, timer = null, i = 0, b = 0, front = 0, fresh = true;
+  var layer = null, timer = null, i = 0, b = 0, front = 0, fresh = true, slide = 0, asma = -1;
 
   function lang() { var l = window.I18N ? window.I18N.lang() : "en"; return l === "es-MX" ? "es" : l; }
   function esc(s) {
@@ -24,9 +25,28 @@
     host.appendChild(layer);
   }
 
+  var QURAN = { en: "Quran", ru: "Коран", ar: "القرآن", tr: "Kur'an", fr: "Coran", es: "Corán", it: "Corano", de: "Koran" };
+  function showName(n) {
+    var l = lang(), card = layer.querySelector(".ayat-card");
+    card.classList.remove("in");
+    void card.offsetWidth;
+    card.classList.add("asma");
+    layer.querySelector(".ayat-ar").textContent = n[2];
+    var trEl = layer.querySelector(".ayat-tr");
+    trEl.textContent = l === "ru" ? n[1] + " — " + n[3] : "";
+    trEl.style.display = l === "ru" ? "" : "none";
+    layer.querySelector(".ayat-ref").textContent = (QURAN[l] || QURAN.en) + " " + n[4];
+    var src = window.HALAL_NAMES_SRC || {};
+    layer.querySelector(".ayat-by").textContent = l === "ru" ? (src.ru || "") : "";
+    card.classList.add("in");
+  }
+
   function show() {
-    var all = list();
+    var all = list(), names = window.HALAL_NAMES || [];
     if (!all.length || !layer) return;
+    slide++;
+    if (asma >= 0 && names.length && slide % 4 === 0) { showName(names[asma % names.length]); asma++; return; }
+    layer.querySelector(".ayat-card").classList.remove("asma");
     var a = all[i % all.length], l = lang();
     var tr = l === "ar" ? "" : (a[l] || a.en || "");
     var card = layer.querySelector(".ayat-card");
@@ -59,8 +79,10 @@
     layer.querySelector(".ayat-prayer").textContent = prayer || "";
   }
 
-  function start(host) {
+  function start(host, opts) {
     if (!host) return;
+    asma = opts && opts.asma ? opts.asma.i : -1;
+    slide = 0;
     if (!layer || layer.parentNode !== host) build(host);
     var all = list();
     i = all.length ? Math.floor(Math.random() * all.length) : 0;

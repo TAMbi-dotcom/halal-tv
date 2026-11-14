@@ -50,7 +50,7 @@
       days: "{n} days", notify: "Note at prayer time", before: "Reminder before", before_none: "None",
       place: "Place", place_note: "Prayer times use the place from Location.", events: "Events of the year",
       on: "On", off: "Off", russia: "Spiritual Administration of Muslims of Russia",
-      azkar: "Adhkar reminder", azkar_sub: "A line on the card after Fajr and after Asr.", azkar_m: "Time for the morning adhkar", azkar_e: "Time for the evening adhkar"
+      azkar: "Adhkar reminder", azkar_sub: "A line on the card after Fajr and after Asr.", azkar_m: "Time for the morning adhkar", azkar_e: "Time for the evening adhkar", asma: "Name of Allah of the day", asma_sub: "A line on the card, and the Names in the ayat screensaver.", asma_day: "Name of the day: {name}"
     },
     ru: {
       sec: "Время намазов", in_h_m: "{name} через {h} ч {m} мин", in_m: "{name} через {m} мин", now: "Время намаза {name}",
@@ -65,7 +65,7 @@
       days: "{n} дн.", notify: "Уведомление о намазе", before: "Напоминание заранее", before_none: "Нет",
       place: "Место", place_note: "Время намазов считается для места из раздела «Место».", events: "События года",
       on: "Вкл.", off: "Выкл.", russia: "ДУМ РФ",
-      azkar: "Напоминание об азкарах", azkar_sub: "Строка на карточке после фаджра и после асра.", azkar_m: "Время утренних азкаров", azkar_e: "Время вечерних азкаров"
+      azkar: "Напоминание об азкарах", azkar_sub: "Строка на карточке после фаджра и после асра.", azkar_m: "Время утренних азкаров", azkar_e: "Время вечерних азкаров", asma: "Имя Аллаха дня", asma_sub: "Строка на карточке и Имена в заставке с аятами.", asma_day: "Имя дня: {name}"
     },
     ar: {
       sec: "مواقيت الصلاة", in_h_m: "{name} بعد {h} س {m} د", in_m: "{name} بعد {m} د", now: "حان وقت {name}",
@@ -80,7 +80,7 @@
       days: "{n} يوم", notify: "تنبيه عند وقت الصلاة", before: "تذكير قبل الصلاة", before_none: "بلا",
       place: "المكان", place_note: "تُحسب المواقيت للمكان المختار في قسم الموقع.", events: "مناسبات العام",
       on: "تشغيل", off: "إيقاف", russia: "الإدارة الدينية لمسلمي روسيا",
-      azkar: "تذكير بالأذكار", azkar_sub: "سطر على البطاقة بعد الفجر وبعد العصر.", azkar_m: "وقت أذكار الصباح", azkar_e: "وقت أذكار المساء"
+      azkar: "تذكير بالأذكار", azkar_sub: "سطر على البطاقة بعد الفجر وبعد العصر.", azkar_m: "وقت أذكار الصباح", azkar_e: "وقت أذكار المساء", asma: "اسم من أسماء الله الحسنى كل يوم", asma_sub: "سطر على البطاقة، والأسماء في شاشة الآيات.", asma_day: "اسم اليوم: {name}"
     },
     tr: {
       sec: "Namaz vakitleri", in_h_m: "{name} vaktine {h} sa {m} dk", in_m: "{name} vaktine {m} dk", now: "{name} vakti",
@@ -95,7 +95,7 @@
       days: "{n} gün", notify: "Vakit bildirimi", before: "Önceden hatırlatma", before_none: "Yok",
       place: "Konum", place_note: "Vakitler Konum bölümündeki yere göre hesaplanır.", events: "Yılın dini günleri",
       on: "Açık", off: "Kapalı", russia: "Rusya Müslümanları Dini İdaresi",
-      azkar: "Zikir hatırlatması", azkar_sub: "Sabah namazından ve ikindiden sonra kartta bir satır.", azkar_m: "Sabah zikirlerinin vakti", azkar_e: "Akşam zikirlerinin vakti"
+      azkar: "Zikir hatırlatması", azkar_sub: "Sabah namazından ve ikindiden sonra kartta bir satır.", azkar_m: "Sabah zikirlerinin vakti", azkar_e: "Akşam zikirlerinin vakti", asma: "Günün Esmâ-i Hüsnâsı", asma_sub: "Kartta bir satır ve ayet ekranında Allah'ın isimleri.", asma_day: "Günün ismi: {name}"
     }
   };
 
@@ -120,7 +120,7 @@
   ];
   var HIGH = ["auto", "middle", "seventh", "angle"];
   var BEFORE = [0, 5, 10, 15, 20, 30];
-  var DEFAULTS = { method: "Turkey", madhab: "shafi", high: "auto", adj: {}, hijri_adj: 0, notify: true, before: 10, show: true, azkar: true };
+  var DEFAULTS = { method: "Turkey", madhab: "shafi", high: "auto", adj: {}, hijri_adj: 0, notify: true, before: 10, show: true, azkar: true, asma: true };
 
   function lang() { var l = window.I18N ? window.I18N.lang() : "en"; return l === "es-MX" ? "es" : l; }
   function tx(key, vars) {
@@ -288,7 +288,27 @@
     if (wd === "Fri" && now < s.today.asr) out.push(tx("friday", { time: fmt(s.today.dhuhr, place, true) }));
     var ev = upcomingEvent(s.c, place, now);
     if (ev && ev.d <= 14) out.push(ev.d === 0 ? tx("event_today", { name: evName(ev.e) }) : tx("event_in", { name: evName(ev.e), d: ev.d }));
+    if (s.c.asma) { var ai = asmaIndex(now, place); if (ai >= 0) out.push(tx("asma_day", { name: asmaText(window.HALAL_NAMES[ai]) })); }
     return out;
+  }
+
+  // One of the Beautiful Names each day (names-data.js), the same all day in the place's time zone.
+  function asmaIndex(now, place) {
+    var all = window.HALAL_NAMES || [];
+    if (!all.length) return -1;
+    var d = (function () { try { return fmtr("en-CA", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: tzOf(place) }).format(now); } catch (e) { return now.toISOString().slice(0, 10); } })();
+    var day = Math.floor(Date.UTC(+d.slice(0, 4), +d.slice(5, 7) - 1, +d.slice(8, 10)) / 864e5);
+    return day % all.length;
+  }
+  function asmaText(n) {
+    if (!n) return "";
+    return lang() === "ru" ? n[1] + " — " + n[3] : n[2];
+  }
+  function asmaOfDay(ST, place, now) {
+    var c = settings(ST);
+    if (!c.asma) return null;
+    var i = asmaIndex(now || new Date(), place);
+    return i < 0 ? null : { i: i, n: window.HALAL_NAMES[i] };
   }
 
   // The card: Hijri date and the next prayer on top, the six times, then Friday, Ramadan or an event.
@@ -370,6 +390,7 @@
       { kind: "cycle", key: "pr-before", label: tx("before"), value: c.before ? tx("min", { n: c.before }) : tx("before_none"),
         adjust: function (d) { set("before", step(BEFORE, c.before, d)); }, act: function () { set("before", step(BEFORE, c.before, 1)); } },
       { kind: "toggle", key: "pr-azkar", label: tx("azkar"), sub: tx("azkar_sub"), value: onoff(c.azkar), act: function () { set("azkar", !c.azkar); } },
+      { kind: "toggle", key: "pr-asma", label: tx("asma"), sub: tx("asma_sub"), value: onoff(c.asma), act: function () { set("asma", !c.asma); } },
       { kind: "cycle", key: "pr-hijri", label: tx("hijri_adj"), value: tx("days", { n: (c.hijri_adj > 0 ? "+" : "") + c.hijri_adj }),
         adjust: function (d) { set("hijri_adj", Math.max(-2, Math.min(2, c.hijri_adj + d))); },
         act: function () { set("hijri_adj", c.hijri_adj >= 2 ? -2 : c.hijri_adj + 1); } },
@@ -394,6 +415,7 @@
 
   window.HalalPrayer = {
     settings: settings, state: state, timesFor: timesFor, cardHTML: cardHTML, lineText: lineText,
-    due: due, rows: rows, schedule: schedule, title: function () { return tx("sec"); }, hijriText: hijriText, names: NAMES
+    due: due, rows: rows, schedule: schedule, title: function () { return tx("sec"); }, hijriText: hijriText, names: NAMES,
+    asmaOfDay: asmaOfDay
   };
 })();

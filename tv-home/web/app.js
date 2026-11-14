@@ -1782,7 +1782,12 @@
         ov.classList.toggle("quiet-hours", isQuietHours(SMART_IDLE.quiet_hours));
         var ayat = SMART_IDLE.home_action === "ayat" && window.HalalAyat && window.HalalAyat.count() > 0;
         ov.classList.toggle("ayat-mode", !!ayat);
-        if (ayat) { window.HalalAyat.start(ov); holdAwake(60); }
+        if (ayat) {
+          var asma = null;
+          try { asma = window.HalalPrayer ? window.HalalPrayer.asmaOfDay(ST, WXCFG) : null; } catch (e) { }
+          window.HalalAyat.start(ov, { asma: asma });
+          holdAwake(60);
+        }
         ov.classList.add("active");
       }
     } else if (ov) {
