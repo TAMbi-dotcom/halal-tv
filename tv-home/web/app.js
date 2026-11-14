@@ -55,7 +55,7 @@
   // Settings from the bridge's config.json (served as config.js, and saved with the offline copy),
   // read in readConfig() once the page starts (mock.js fills them in for previews). See docs/CONFIG.md.
   var CFG = {}, HOME = {}, TVCFG = {}, QUICK = [];
-  var WXCFG = { lat: -33.8688, lon: 151.2093, place: "Sydney", timezone: "Australia/Sydney" };
+  var WXCFG = { lat: 36.8969, lon: 30.7133, place: "Antalya", timezone: "Europe/Istanbul" };   // Halal TV: Antalya until a place is chosen
   var QUICK_ALL = ["sleep", "picture", "look", "soundscape", "screen_off", "headphones", "input", "bluetooth", "network", "tvsettings", "screensaver", "extend"];
   // The most personal photos this TV keeps (also MAX_PHOTOS in bridge/server.py and MainActivity.kt).
   var MAX_PHOTOS = 50;
@@ -263,6 +263,7 @@
     launch: '<svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>',
     chevron: '<svg viewBox="0 0 24 24"><path d="M9.5 5.5 16 12l-6.5 6.5"/></svg>',
     // the settings screen's sections
+    moon: '<svg viewBox="0 0 24 24"><path d="M15.5 3.5a8.5 8.5 0 1 0 5 13.2A7 7 0 0 1 15.5 3.5z"/><path d="M18 6.5l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z"/></svg>',
     globe: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.5 3.8 5.3 3.8 8.5s-1.2 6-3.8 8.5c-2.6-2.5-3.8-5.3-3.8-8.5s1.2-6 3.8-8.5z"/></svg>',
     pin: '<svg viewBox="0 0 24 24"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></svg>',
     cloud: '<svg viewBox="0 0 24 24"><path d="M17.5 19H8a4 4 0 1 1 .9-7.9A5.5 5.5 0 0 1 19.4 12a3.5 3.5 0 0 1-1.9 7z"/></svg>',
@@ -647,6 +648,7 @@
     document.body.classList.toggle("night", h >= 21 || h < 6);
     if (NIGHT) { glassClock(hm); if (SUN_SYNC) applySunSync(); updateAmbientWeather(); }
     if (quickReady) renderQuick();
+    renderPrayer(false);
   }
 
   // Night: five lock screen scenes take turns every 20 s (home.scenes picks which and in what
@@ -3193,12 +3195,12 @@
   // Saved on this TV (page storage and the launcher's own store, TVOS.keep) and, with a bridge,
   // also on the computer (/api/settings), so the phone and the TV agree.
   var ST_KEY = "tvhome.settings";
-  var SECS = [["language", "globe"], ["location", "pin"], ["weather", "cloud"], ["look", "look"],
+  var SECS = [["prayer", "moon"], ["language", "globe"], ["location", "pin"], ["weather", "cloud"], ["look", "look"],
     ["apps", "apps"], ["people", "person"], ["quick", "bolt"], ["about", "info"]];
   var SET = { col: "secs", sec: 0, ri: 0, keyFocus: null, sub: null, lift: null, confirm: null, dirty: false, typing: null,
     msg: "", geo: { q: "", list: null, busy: false, err: false } };
   var REPO_URL = "github.com/Seagey/couch-tv";
-  var WX_DEFAULT = { lat: -33.8688, lon: 151.2093, place: "Sydney", timezone: "Australia/Sydney" };
+  var WX_DEFAULT = { lat: 36.8969, lon: 30.7133, place: "Antalya", timezone: "Europe/Istanbul" };
   var pushTimer = null;
 
   function loadSettings() {
@@ -3286,6 +3288,7 @@
   function info(key, label, value, sub) { return { kind: "info", key: key, label: label, value: value, sub: sub }; }
 
   function sectionRows(id) {
+    if (id === "prayer") return prayerRows();
     if (id === "updates") return updateRows();
     if (id === "language") return languageRows();
     if (id === "location") return locationRows();
@@ -3295,6 +3298,28 @@
     if (id === "people") return peopleRows();
     if (id === "quick") return quickRows();
     return aboutRows();
+  }
+
+  // ---- Halal TV: prayer times (prayer.js) ----
+  function prayerRows() {
+    if (!window.HalalPrayer) return [info("pr-none", "—")];
+    return window.HalalPrayer.rows({ ST: ST, save: saveSettings, info: info, head: head, place: WXCFG,
+      refresh: function () { renderPrayer(true); } });
+  }
+  var prayerShown = "";
+  function renderPrayer(force) {
+    var P = window.HalalPrayer, el = $("prayer");
+    if (!P || !el) return;
+    var now = new Date(), html = "";
+    try { html = P.cardHTML(ST, WXCFG, now, CLOCK24); } catch (e) { html = ""; }
+    if (force || html !== prayerShown) { el.innerHTML = html; prayerShown = html; }
+    var line = "";
+    try { line = P.lineText(ST, WXCFG, now, CLOCK24); } catch (e) {}
+    var ip = $("idle-prayer"); if (ip) ip.textContent = line;
+    if (window.KidsMode && window.KidsMode.prayerLine) window.KidsMode.prayerLine(line);
+    var due = null;
+    try { due = P.due(ST, WXCFG, now); } catch (e) {}
+    if (due) toast(due);
   }
 
   function languageRows() {

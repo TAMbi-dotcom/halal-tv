@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
-<title>Home</title>
+<title>Halal TV</title>
 <link rel="preload" href="fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="app.css">
 </head>
@@ -41,6 +41,8 @@
       <div class="sleep-menu" id="sleep-menu"></div>
     </div>
     <p class="quick-note" id="quick-note"></p>
+    <!-- Halal TV: today's prayer times, drawn by prayer.js through app.js -->
+    <div class="prayer" id="prayer"></div>
     <!-- Now playing (#31): the song any app is playing behind the home, drawn by app.js. Top right,
          under the quick buttons, where no scene puts its clock -->
     <div class="np" id="np" aria-live="polite"></div>
@@ -141,6 +143,7 @@
     <div class="idle-clock" id="idle-clock"></div>
     <div class="idle-date" id="idle-date"></div>
     <div class="idle-wx" id="idle-wx"></div>
+    <div class="idle-prayer" id="idle-prayer"></div>
     <div class="idle-wake-hint" id="idle-wake-hint"></div>
   </div>
 </div>
@@ -160,6 +163,8 @@
 <script src="kids.js"></script>
 <script src="spotify-player.js"></script>
 <script src="cards.js"></script>
+<script src="vendor/adhan.min.js"></script>
+<script src="prayer.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
