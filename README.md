@@ -56,9 +56,9 @@ From a Windows computer, with one command (box and computer on the same Wi-Fi):
 1. On the box: Settings → Device Preferences → About, press Build 7 times, then Developer options →
    USB debugging.
 2. On the computer, download `install-windows.ps1` from the Releases page and run it in PowerShell:
-   `powershell -ExecutionPolicy Bypass -File install-windows.ps1 -Tv <box IP address>`.
-   It downloads Google's adb and the latest Halal TV, installs or updates it and makes it the home
-   screen. The box asks "Allow USB debugging?" once: tick Always and press Allow.
+   `powershell -ExecutionPolicy Bypass -File install-windows.ps1`.
+   It finds the box on your Wi-Fi by itself (or pass `-Tv <IP address>`), downloads Google's adb and
+   the latest Halal TV, installs or updates it and makes it the home screen. The box asks "Allow USB debugging?" once: tick Always and press Allow.
 3. On the box, in Halal TV, press **Connect ADB**.
 
 Updates install over the top and keep your settings. Early test builds (before 14 November 2026)
@@ -159,9 +159,9 @@ couch-tv updates: [UPSTREAM.md](UPSTREAM.md). Who made what, and under which lic
 1. На приставке: «Настройки → Настройки устройства → Об устройстве», 7 раз нажать «Сборка», затем
    «Для разработчиков» → «Отладка по USB».
 2. На ПК скачайте `install-windows.ps1` со страницы выпусков и запустите в PowerShell:
-   `powershell -ExecutionPolicy Bypass -File install-windows.ps1 -Tv <IP приставки>`.
-   Скрипт сам скачает adb от Google и последнюю версию Halal TV, установит или обновит её и сделает
-   главным экраном. Приставка один раз спросит «Разрешить отладку по USB?» — «Всегда» и «Разрешить».
+   `powershell -ExecutionPolicy Bypass -File install-windows.ps1`.
+   Скрипт сам найдёт приставку в вашей сети Wi-Fi (или укажите `-Tv <IP приставки>`), скачает adb от
+   Google и последнюю версию Halal TV, установит или обновит её и сделает главным экраном. Приставка один раз спросит «Разрешить отладку по USB?» — «Всегда» и «Разрешить».
 3. На приставке в Halal TV нажмите **Connect ADB**.
 
 Обновления ставятся поверх, настройки сохраняются. Ранние тестовые сборки (до 14 ноября 2026) стояли
